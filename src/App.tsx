@@ -187,7 +187,7 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
     canEditResumo, canEnviarParaArtes, canEnviarParaImpressao, canEnviarParaProducao, canEnviarParaCostura, canEnviarParaEntrega, canFinalizar,
     canEditImpressao, canEditArtes, canEditProducao, canEditEntrega, canEditArteUrl, canEditArteArte, canEditArteProducao, prog, motivoBloqueio,
     criarPedido, salvarEdicao, enviarParaArtes, enviarParaImpressao, enviarParaProducao, enviarParaCostura, enviarParaEntrega, finalizarPedido, gerarTokenAcompanhamento, revogarTokenAcompanhamento,
-    voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida, entregaConcluida, substituirArte, substituirArteProducao, addInfoImpressao, addInfoArtes, addInfoProducao, addInfoEntrega,
+    voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida, entregaConcluida, substituirArte, substituirArteProducao,
     salvarPrevisaoImp, salvarPrevisaoFin, salvarPrevisaoCostura, salvarPrevisaoEntrega,
     addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
     editarPrevisao, setPedidos,
