@@ -188,7 +188,9 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
     canEditImpressao, canEditArtes, canEditProducao, canEditEntrega, canEditArteUrl, canEditArteArte, canEditArteProducao, prog, motivoBloqueio,
     criarPedido, salvarEdicao, enviarParaArtes, enviarParaImpressao, enviarParaProducao, enviarParaCostura, enviarParaEntrega, finalizarPedido, gerarTokenAcompanhamento, revogarTokenAcompanhamento,
     voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida, entregaConcluida, substituirArte, substituirArteProducao, addInfoImpressao, addInfoArtes, addInfoProducao, addInfoEntrega,
-    salvarPrevisaoImp, salvarPrevisaoFin, salvarPrevisaoCostura, salvarPrevisaoEntrega, editarPrevisao, setPedidos,
+    salvarPrevisaoImp, salvarPrevisaoFin, salvarPrevisaoCostura, salvarPrevisaoEntrega,
+    addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
+    editarPrevisao, setPedidos,
   } = usePedidos(currentUser, config, visual)
 
   const [showCadastroUsuarios, setShowCadastroUsuarios] = useState(false)

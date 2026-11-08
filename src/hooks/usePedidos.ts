@@ -694,6 +694,7 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
     criarPedido, salvarEdicao, enviarParaArtes, enviarParaImpressao, enviarParaProducao, enviarParaCostura, enviarParaEntrega, finalizarPedido,
     voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida: podeEntregaConcluidaCb, entregaConcluida, substituirArte, substituirArteProducao, addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
     salvarPrevisaoImp, salvarPrevisaoFin, salvarPrevisaoEntrega, salvarPrevisaoCostura, editarPrevisao,
+    addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
     gerarTokenAcompanhamento, revogarTokenAcompanhamento,
   }
 }
