@@ -114,6 +114,7 @@ interface UsePedidosReturn {
   addInfoEntrega: (p: Pedido) => void
   salvarPrevisaoImp: (p: Pedido) => void
   salvarPrevisaoFin: (p: Pedido) => void
+  salvarPrevisaoCostura: (p: Pedido) => void
   salvarPrevisaoEntrega: (p: Pedido) => void
   editarPrevisao: (imp: string, fin: string) => void
 }

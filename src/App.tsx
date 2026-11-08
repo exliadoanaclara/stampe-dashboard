@@ -182,7 +182,7 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
     showHistorico, setShowHistorico, previsaoEdit,
     tempInfoImp, setTempInfoImp, tempInfoFin, setTempInfoFin,
     tempInfoEntrega, setTempInfoEntrega, tempInfoCostura, setTempInfoCostura,
-    carregando,
+    carregando, pedidos,
     filtered, stats, atendentes, aba, setAba, busca, setBusca, filtroAtendente, setFiltroAtendente,
     canEditResumo, canEnviarParaArtes, canEnviarParaImpressao, canEnviarParaProducao, canEnviarParaCostura, canEnviarParaEntrega, canFinalizar,
     canEditImpressao, canEditArtes, canEditProducao, canEditEntrega, canEditArteUrl, canEditArteArte, canEditArteProducao, prog, motivoBloqueio,
