@@ -60,8 +60,6 @@ export function PainelCostura({
     ).sort((a, b) => a.numero - b.numero)
   }, [pedidos])
 
-  const agora = new Date().toISOString()
-
   return (
     <div className="min-h-screen bg-red-50 text-zinc-900 p-2 md:p-4 max-w-[500px] mx-auto">
       {/* Header */}

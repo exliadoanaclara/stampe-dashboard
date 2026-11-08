@@ -720,7 +720,7 @@ export function PedidoModal({
                           ? { background: "#7c3aed", color: "#fff", fontSize: "14px" }
                           : { background: "#e4e4e7", color: "#71717a", cursor: "not-allowed" }}
                       >
-                        {canEnviarParaEntrega ? `🚚 ENVIAR PARA ENTREGA • ${config.COSTURA}%` : "🔒 Somente Vendedor"}
+                        {canEnviarParaCostura ? `🧵 ENVIAR PARA COSTURA • ${config.COSTURA}%` : "🔒 Somente Vendedor"}
                       </button>
                     <button
                       onClick={onFinalizar}
@@ -764,16 +764,6 @@ export function PedidoModal({
                 )}
                 {selected.etapa === "FINALIZADO" && (
                   <div className="flex flex-col md:flex-row gap-3 flex-1">
-                    <button
-                      onClick={onEnviarParaEntrega}
-                      className="flex-1 rounded-full py-3.5 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-center px-4 leading-tight"
-                      style={
-                        canEnviarParaEntrega
-                          ? { background: "#059669", color: "#fff", fontSize: "14px" }
-                          : { background: "#e4e4e7", color: "#71717a", cursor: "not-allowed" }}
-                      >
-                        {canEnviarParaEntrega ? `🚚 ENVIAR PARA ENTREGA • ${config.ENTREGA}%` : "🔒 Sem permissao (Vendedor/ADMIN)"}
-                      </button>
                     {podeReabrir && (
                       <button
                         onClick={onReabrir}
@@ -829,7 +819,6 @@ export function PedidoModal({
                     </button>
                   </div>
                 ) : null}
-                <button onClick={onClose} className="no-print md:w-auto w-full bg-white border border-zinc-200 rounded-full px-6 py-3.5 font-bold text-sm mt-2">Fechar</button>
                 <button onClick={onClose} className="no-print md:w-auto w-full bg-white border border-zinc-200 rounded-full px-6 py-3.5 font-bold text-sm mt-2">Fechar</button>
               </div>
             </div>

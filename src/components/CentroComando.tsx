@@ -390,7 +390,7 @@ export function CentroComando({ user, pedidos, onClose }: CentroComandoProps) {
             subtitulo={pedidosHoje > 0 ? `${pedidosHoje} hoje` : ""}
           />
           <KpiCard
-            label="Recebidos hoje"
+            label="Criados hoje"
             valor={pedidosHoje}
             cor="#0284c7"
             icone="📥"
