@@ -1,0 +1,169 @@
+﻿@import 'tailwindcss';
+
+* { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+:root {
+  --stamper-red: #c1121f;
+  --stamper-red-dark: #8f0e19;
+  --stamper-red-light: #fff5f5;
+  --stamper-border: #fee2e2;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================================================================
+   FUNDO VISUAL IMPACTANTE — STAMPE
+   ============================================================================ */
+
+html { background: #0a0a0a !important; }
+
+body {
+  background: #0a0a0a !important;
+  margin: 0;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Fundo base com gradiente sutil */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1 !important;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(193, 18, 31, 0.10) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(143, 14, 25, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(193, 18, 31, 0.04) 0%, transparent 80%);
+}
+
+/* Bola de luz grande superior esquerda */
+body::after {
+  content: "";
+  position: fixed;
+  top: -25%;
+  left: -15%;
+  width: 55vw;
+  height: 55vw;
+  background: #c1121f;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.30;
+  animation: stampe-float 18s ease-in-out infinite;
+  z-index: -1 !important;
+  pointer-events: none;
+}
+
+/* Segunda bola de luz inferior direita */
+.stampe-glow-2 {
+  position: fixed;
+  bottom: -25%;
+  right: -15%;
+  width: 45vw;
+  height: 45vw;
+  background: #8f0e19;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.20;
+  animation: stampe-float 20s ease-in-out infinite reverse;
+  z-index: -1 !important;
+  pointer-events: none;
+}
+
+@keyframes stampe-float {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.30; }
+  25% { transform: translate(50px, -80px) scale(1.15); opacity: 0.40; }
+  50% { transform: translate(-30px, 50px) scale(0.85); opacity: 0.25; }
+  75% { transform: translate(40px, 80px) scale(1.10); opacity: 0.35; }
+}
+
+.stampe-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1 !important;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+
+/* Remove fundo dos containers React */
+#root, [id="root"] > div {
+  background: transparent !important;
+}
+
+/* Vidro fosco para cards e modais */
+.stampe-glass {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+}
+
+.stampe-title-glow {
+  text-shadow: 0 0 40px rgba(193, 18, 31, 0.8), 0 0 80px rgba(193, 18, 31, 0.5);
+}
+
+button, a { -webkit-tap-highlight-color: transparent; }
+
+.print-document { display: none; }
+
+@page { size: A4; margin: 0; }
+
+/* ============================================================================
+   CONTRATO DE IMPRESSÃO (TAREFA-025) — NÃO ALTERAR SEM TESTE PDF
+   Classes estáveis que o @media print usa. Se mover/extrair componentes,
+   MANTENHA estas classes nos elementos correspondentes.
+   Teste: npm run build && (gerar PDF da OS) → deve dar 1 página A4, coluna 722px.
+   ============================================================================ */
+
+@media print {
+  /* Oculta UI da aplicação */
+  .no-print { display: none !important; }
+  .print-hide { display: none !important; }        /* alias estável para .fixed.inset-0 e afins */
+  .fixed.inset-0 { display: none !important; }     /* legacy: marca d'água/fundo */
+
+  /* Reset de página */
+  html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+
+  /* Oculta layout da app (header/nav/main/footer) — usa classe estável, não tags */
+  .print-hide-layout { display: none !important; }
+
+  /* Reset do container raiz — não depende de #root > div */
+  .print-root-reset {
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+  }
+
+  /* Documento da Ordem de Serviço */
+  .print-document {
+    display: grid !important;
+    grid-template-columns: 36px minmax(0, 1fr) 36px !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    align-items: stretch !important;
+    page-break-after: auto !important;
+  }
+  .print-document > div { box-shadow: none !important; }
+  .print-document .print-center { min-height: 100vh !important; }
+  .print-document .print-banner { position: relative !important; overflow: hidden !important; }
+  .print-document .print-clip { overflow: hidden !important; }
+
+  /* Garante cores em impressão */
+  button, a, input, select, textarea, * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+}

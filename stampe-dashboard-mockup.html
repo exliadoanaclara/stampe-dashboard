@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STAMPE · Sistema de Gestão de Pedidos · Dashboard</title>
+  <style>
+    :root {
+      --cor-header: #b5000c;
+      --cor-header2: #c1121f;
+      --cor-header3: #8f0e19;
+      --cor-fundo: #fafafa;
+      --cor-texto: #2d2d2d;
+      --cor-texto-claro: #666666;
+      --cor-sucesso: #059669;
+      --cor-alerta: #f59e0b;
+      --cor-fundo-card: #ffffff;
+      --cor-borda: #e5e5e5;
+      --cor-sombra: rgba(0,0,0,0.08);
+      --fonte-titulo: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --fonte-corpo: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --fonte-numeros: 'Courier New', monospace;
+      --espaco-xl: 3rem;
+      --espaco-l: 2rem;
+      --espaco-m: 1.5rem;
+      --espaco-s: 1rem;
+      --espaco-xs: 0.5rem;
+      --border-radius-xl: 16px;
+      --border-radius-l: 12px;
+      --border-radius-m: 8px;
+      --border-radius-s: 4px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--fonte-corpo);
+      background-color: var(--cor-fundo);
+      color: var(--cor-texto);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--cor-header) 0%, var(--cor-header2) 50%, var(--cor-header3) 100%);
+      color: white;
+      padding: var(--espaco-l) var(--espaco-xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+      opacity: 0.3;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--espaco-m);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--espaco-m);
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-m);
+    }
+
+    .logo-mark {
+      width: 64px;
+      height: 64px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--cor-header);
+      box-shadow: 0 8px 24px var(--cor-sombra);
+    }
+
+    .logo-text h1 {
+      font-family: var(--fonte-titulo);
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .user-badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--border-radius-l);
+      padding: var(--espaco-s) var(--espaco-m);
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-s);
+      backdrop-filter: blur(10px);
+    }
+
+    .user-badge input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: var(--fonte-corpo);
+      font-size: 14px;
+      font-weight: 700;
+      width: 120px;
+      outline: none;
+    }
+
+    .user-badge select {
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: var(--fonte-corpo);
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .user-badge select option {
+      background: var(--cor-header2);
+      color: white;
+    }
+
+    .user-role {
+      font-size: 11px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .stats-grid {
+      max-width: 1400px;
+      margin: 0 auto var(--espaco-xl);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--espaco-m);
+      padding: 0 var(--espaco-xl);
+    }
+
+    .stat-card {
+      background: var(--cor-fundo-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--border-radius-xl);
+      padding: var(--espaco-m);
+      box-shadow: 0 4px 12px var(--cor-sombra);
+      display: flex;
+      flex-direction: column;
+      gap: var(--espaco-s);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px var(--cor-sombra);
+    }
+
+    .stat-card.pedido { border-left: 4px solid var(--cor-header); }
+    .stat-card.impressao { border-left: 4px solid var(--cor-header2); }
+    .stat-card.finalizacao { border-left: 4px solid #0284c7; }
+    .stat-card.entrega { border-left: 4px solid #059669; }
+    .stat-card.finalizado { border-left: 4px solid #0f766e; }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cor-texto-claro);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: var(--fonte-numeros);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--cor-texto);
+    }
+
+    .stat-trend {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .stat-trend.positivo { color: var(--cor-sucesso); }
+    .stat-trend.negativo { color: #dc2626; }
+
+    .stages-nav {
+      max-width: 1400px;
+      margin: 0 auto var(--espaco-xl);
+      padding: 0 var(--espaco-xl);
+      display: flex;
+      gap: var(--espaco-s);
+      overflow-x: auto;
+      padding-bottom: var(--espaco-m);
+      scrollbar-width: none;
+    }
+
+    .stages-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .stage-item {
+      flex: 0 0 auto;
+      min-width: 160px;
+      background: var(--cor-fundo-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--border-radius-l);
+      padding: var(--espaco-m);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-m);
+    }
+
+    .stage-item:hover {
+      border-color: var(--cor-header);
+      transform: translateY(-2px);
+    }
+
+    .stage-item.active {
+      border-color: var(--cor-header);
+      background: rgba(181, 0, 12, 0.05);
+    }
+
+    .stage-item.pedido { border-color: var(--cor-header); }
+    .stage-item.impressao { border-color: #f59e0b; }
+    .stage-item.finalizacao { border-color: #0284c7; }
+    .stage-item.entrega { border-color: #059669; }
+    .stage-item.finalizado { border-color: #0f766e; }
+
+    .stage-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .stage-dot.pedido { background: var(--cor-header); box-shadow: 0 0 0 4px rgba(181, 0, 12, 0.2); }
+    .stage-dot.impressao { background: #f59e0b; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2); }
+    .stage-dot.finalizacao { background: #0284c7; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2); }
+    .stage-dot.entrega { background: #059669; box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.2); }
+    .stage-dot.finalizado { background: #0f766e; box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.2); }
+
+    .stage-info h3 {
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .stage-count {
+      font-family: var(--fonte-numeros);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cor-texto-claro);
+    }
+
+    .stage-item.active .stage-count { color: var(--cor-header); }
+
+    .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 var(--espaco-xl) var(--espaco-xl);
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: var(--espaco-xl);
+    }
+
+    .orders-section {
+      background: var(--cor-fundo-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--border-radius-xl);
+      padding: var(--espaco-m);
+      box-shadow: 0 4px 12px var(--cor-sombra);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--espaco-m);
+      padding-bottom: var(--espaco-m);
+      border-bottom: 2px solid var(--cor-borda);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--cor-texto);
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-s);
+    }
+
+    .section-actions {
+      display: flex;
+      gap: var(--espaco-s);
+    }
+
+    .btn {
+      padding: var(--espaco-s) var(--espaco-m);
+      border-radius: var(--border-radius-m);
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-s);
+    }
+
+    .btn-primary {
+      background: var(--cor-header);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--cor-header3);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--cor-texto-claro);
+      border: 1px solid var(--cor-borda);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--cor-header);
+      color: var(--cor-header);
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .orders-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--cor-texto-claro);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: var(--espaco-s);
+      border-bottom: 2px solid var(--cor-borda);
+    }
+
+    .orders-table td {
+      padding: var(--espaco-s);
+      border-bottom: 1px solid var(--cor-borda);
+      font-size: 14px;
+    }
+
+    .orders-table tr:hover {
+      background: #fafafa;
+    }
+
+    .order-number {
+      font-family: var(--fonte-numeros);
+      font-weight: 700;
+      color: var(--cor-texto);
+    }
+
+    .order-client {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .order-service {
+      font-size: 13px;
+      color: var(--cor-texto-claro);
+    }
+
+    .order-atendente {
+      font-size: 13px;
+      color: var(--cor-texto-claro);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: var(--border-radius-s);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge.pedido { background: rgba(181, 0, 12, 0.1); color: var(--cor-header); }
+    .badge.impressao { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    .badge.finalizacao { background: rgba(2, 132, 199, 0.1); color: #0284c7; }
+    .badge.entrega { background: rgba(5, 150, 105, 0.1); color: #059669; }
+    .badge.finalizado { background: rgba(15, 118, 110, 0.1); color: #0f766e; }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--espaco-m);
+    }
+
+    .progress-panel {
+      background: var(--cor-fundo-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--border-radius-xl);
+      padding: var(--espaco-m);
+      box-shadow: 0 4px 12px var(--cor-sombra);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--cor-texto);
+      margin-bottom: var(--espaco-m);
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-s);
+    }
+
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-s);
+      margin-bottom: var(--espaco-m);
+      padding-bottom: var(--espaco-m);
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .progress-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cor-texto);
+      width: 110px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: var(--border-radius-s);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--border-radius-s);
+      transition: width 0.5s ease;
+    }
+
+    .progress-fill.pedido { background: var(--cor-header); width: 0%; }
+    .progress-fill.impressao { background: #f59e0b; width: 50%; }
+    .progress-fill.finalizacao { background: #0284c7; width: 75%; }
+    .progress-fill.entrega { background: #059669; width: 90%; }
+    .progress-fill.finalizado { background: #0f766e; width: 100%; }
+
+    .progress-value {
+      font-family: var(--fonte-numeros);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cor-texto-claro);
+    }
+
+    .quick-actions {
+      background: var(--cor-fundo-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--border-radius-xl);
+      padding: var(--espaco-m);
+      box-shadow: 0 4px 12px var(--cor-sombra);
+    }
+
+    .quick-actions h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--cor-texto);
+      margin-bottom: var(--espaco-m);
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: var(--espaco-m);
+      border: 1px solid var(--cor-borda);
+      border-radius: var(--border-radius-m);
+      background: var(--cor-fundo-card);
+      color: var(--cor-texto);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: var(--espaco-s);
+    }
+
+    .action-btn:hover {
+      background: #fafafa;
+      border-color: var(--cor-header);
+      color: var(--cor-header);
+    }
+
+    .action-btn:last-child { margin-bottom: 0; }
+
+    .action-btn.secondary { color: var(--cor-texto-claro); }
+    .action-btn.secondary:hover { color: var(--cor-header); border-color: var(--cor-header); }
+
+    .footer {
+      max-width: 1400px;
+      margin: var(--espaco-xl) auto 0;
+      padding: 0 var(--espaco-xl);
+      border-top: 1px solid var(--cor-borda);
+      padding-top: var(--espaco-m);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--cor-texto-claro);
+      font-size: 12px;
+    }
+
+    .footer-brand {
+      font-weight: 700;
+      color: var(--cor-texto);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .header-content {
+        gap: var(--espaco-s);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .stages-nav {
+        padding-bottom: var(--espaco-l);
+      }
+      .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .orders-table {
+        font-size: 12px;
+      }
+      .orders-table th, .orders-table td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo-group">
+          <div class="logo-mark">◎</div>
+          <div class="logo-text">
+            <h1>STAMPE</h1>
+            <p>Sistema de Gestão de Pedidos · Fuso: America/Sao_Paulo</p>
+          </div>
+        </div>
+        <div class="user-badge">
+          <div>
+            <input type="text" id="user-name" value="ITALO" placeholder="Seu nome">
+            <div class="user-role">Atendente · <span id="user-desc">Cria e edita pedidos</span></div>
+          </div>
+          <select id="user-role">
+            <option value="PEDIDO">Atendimento</option>
+            <option value="IMPRESSAO">Impressão</option>
+            <option value="FINALIZACAO">Finalização</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card pedido">
+      <div class="stat-label">Pedidos Hoje</div>
+      <div class="stat-value">12</div>
+      <div class="stat-trend positivo">▲ 3 vs ontem</div>
+    </div>
+    <div class="stat-card impressao">
+      <div class="stat-label">Na Impressão</div>
+      <div class="stat-value">2</div>
+      <div class="stat-trend negativo">▼ 1 atrasado</div>
+    </div>
+    <div class="stat-card finalizacao">
+      <div class="stat-label">Finalização</div>
+      <div class="stat-value">1</div>
+      <div class="stat-trend positivo">▲ novo</div>
+    </div>
+    <div class="stat-card entrega">
+      <div class="stat-label">Entrega</div>
+      <div class="stat-value">0</div>
+      <div class="stat-trend neutro">— aguardando</div>
+    </div>
+    <div class="stat-card finalizado">
+      <div class="stat-label">Finalizados</div>
+      <div class="stat-value">8</div>
+      <div class="stat-trend positivo">▲ 90% concluído</div>
+    </div>
+  </div>
+
+  <div class="stages-nav" id="stages-nav">
+    <div class="stage-item pedido active" onclick="selectStage('pedido')">
+      <div class="stage-dot pedido"></div>
+      <div class="stage-info">
+        <h3>Pedido</h3>
+        <div class="stage-count">12</div>
+      </div>
+    </div>
+    <div class="stage-item impressao" onclick="selectStage('impressao')">
+      <div class="stage-dot impressao"></div>
+      <div class="stage-info">
+        <h3>Impressão</h3>
+        <div class="stage-count">2</div>
+      </div>
+    </div>
+    <div class="stage-item finalizacao" onclick="selectStage('finalizacao')">
+      <div class="stage-dot finalizacao"></div>
+      <div class="stage-info">
+        <h3>Finalização</h3>
+        <div class="stage-count">1</div>
+      </div>
+    </div>
+    <div class="stage-item entrega" onclick="selectStage('entrega')">
+      <div class="stage-dot entrega"></div>
+      <div class="stage-info">
+        <h3>Entrega</h3>
+        <div class="stage-count">0</div>
+      </div>
+    </div>
+    <div class="stage-item finalizado" onclick="selectStage('finalizado')">
+      <div class="stage-dot finalizado"></div>
+      <div class="stage-info">
+        <h3>Finalizado</h3>
+        <div class="stage-count">8</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="orders-section">
+      <div class="section-header">
+        <div class="section-title">📋 Pedidos em Andamento</div>
+        <div class="section-actions">
+          <button class="btn btn-outline">🔄 Atualizar</button>
+          <button class="btn btn-primary">+ Novo Pedido</button>
+        </div>
+      </div>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Nº Pedido</th>
+            <th>Cliente</th>
+            <th>Serviço</th>
+            <th>Atendente</th>
+            <th>Status</th>
+            <th>Prazo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="order-number">#001</span></td>
+            <td><span class="order-client">CLIENTE TESTE</span></td>
+            <td class="order-service">FAIXA</td>
+            <td class="order-atendente">ITALO</td>
+            <td><span class="badge pedido">PEDIDO</span></td>
+            <td><span class="order-service">26/09/2026</span></td>
+          </tr>
+          <tr>
+            <td><span class="order-number">#002</span></td>
+            <td><span class="order-client">GRÁFICA SÃO PAULO</span></td>
+            <td class="order-service">BANNER</td>
+            <td class="order-atendente">ITALO</td>
+            <td><span class="badge impressao">IMPRESSAO</span></td>
+            <td><span class="order-service">26/09/2026</span></td>
+          </tr>
+          <tr>
+            <td><span class="order-number">#003</span></td>
+            <td><span class="order-client">LOJA CENTRAL</span></td>
+            <td class="order-service">CARTAZ</td>
+            <td class="order-atendente">ITALO</td>
+            <td><span class="badge finalizacao">FINALIZACAO</span></td>
+            <td><span class="order-service">27/09/2026</span></td>
+          </tr>
+          <tr>
+            <td><span class="order-number">#004</span></td>
+            <td><span class="order-client">EMPRESA XYZ</span></td>
+            <td class="order-service">FAIXA</td>
+            <td class="order-atendente">ITALO</td>
+            <td><span class="badge finalizado">FINALIZADO</span></td>
+            <td><span class="order-service">25/09/2026</span></td>
+          </tr>
+          <tr>
+            <td><span class="order-number">#005</span></td>
+            <td><span class="order-client">MERCADO VILA</span></td>
+            <td class="order-service">BANNER</td>
+            <td class="order-atendente">ITALO</td>
+            <td><span class="badge pedido">PEDIDO</span></td>
+            <td><span class="order-service">26/09/2026</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sidebar">
+      <div class="progress-panel">
+        <div class="panel-title">📊 Progresso das Etapas</div>
+        <div class="progress-item">
+          <div class="progress-label">Pedido</div>
+          <div class="progress-bar"><div class="progress-fill pedido" style="width: 0%;"></div></div>
+          <div class="progress-value">0%</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">Impressão</div>
+          <div class="progress-bar"><div class="progress-fill impressao" style="width: 50%;"></div></div>
+          <div class="progress-value">50%</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">Finalização</div>
+          <div class="progress-bar"><div class="progress-fill finalizacao" style="width: 75%;"></div></div>
+          <div class="progress-value">75%</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">Entrega</div>
+          <div class="progress-bar"><div class="progress-fill entrega" style="width: 90%;"></div></div>
+          <div class="progress-value">90%</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-label">Finalizado</div>
+          <div class="progress-bar"><div class="progress-fill finalizado" style="width: 100%;"></div></div>
+          <div class="progress-value">100%</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <h3>Ações Rápidas</h3>
+        <button class="action-btn">✏️ Editar Pedido Selecionado</button>
+        <button class="action-btn">🖨️ Imprimir Ordem de Serviço</button>
+        <button class="action-btn">📊 Relatório Diário</button>
+        <button class="action-btn secondary">⚙️ Configurar Progresso</button>
+        <button class="action-btn secondary">🎨 Personalizar Visual</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand">STAMPE</div>
+    <div>Sistema de Gestão de Pedidos · Versão Dashboard Concept</div>
+    <div>Desenvolvido com a filosofia Stampe Flow</div>
+  <footer class="footer">
+    <div class="footer-brand">STAMPE</div>
+    <div>Sistema de Gestão de Pedidos · Versão Dashboard Concept</div>
+    <div>Desenvolvido com a filosofia Stampe Flow</div>
+  </footer>
+
+  <script>
+    function selectStage(stage) {
+      document.querySelectorAll('.stage-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+
+      const rows = document.querySelectorAll('.orders-table tbody tr');
+      rows.forEach(row => {
+        const badge = row.querySelector('.badge');
+        if (badge) {
+          if (badge.classList.contains(stage) || stage === 'todos') {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    const nameInput = document.getElementById('user-name');
+    nameInput.addEventListener('input', (e) => {
+      console.log('Nome do atendente atualizado:', e.target.value);
+    });
+
+    const roleSelect = document.getElementById('user-role');
+    const roleDesc = document.getElementById('user-desc');
+    const roleDescriptions = {
+      'PEDIDO': 'Cria e edita pedidos',
+      'IMPRESSAO': 'Gerencia impressão',
+      'FINALIZACAO': 'Finaliza pedidos',
+      'ADMIN': 'Acesso total'
+    };
+    roleSelect.addEventListener('change', (e) => {
+      roleDesc.textContent = roleDescriptions[e.target.value] || '';
+      console.log('Role alterado para:', e.target.value);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const fills = document.querySelectorAll('.progress-fill');
+        fills.forEach(fill => {
+          const width = fill.style.width;
+          fill.style.width = '0%';
+          setTimeout(() => {
+            fill.style.width = width;
+          }, 100);
+        });
+      }, 300);
+    });
+  </script>
+</body>
+</html>

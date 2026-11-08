@@ -1,0 +1,80 @@
+              {/* ARTE DE PRODUCAO (enviada pelo impressao/arte finalista na impressao/finalizacao) - Producao so visualiza */}
+              {(selected.etapa === "IMPRESSAO" || selected.etapa === "PRODUCAO" || selected.etapa === "FINALIZADO") && selected.arteProducaoUrls.length > 0 && (
+                <section className="border border-zinc-200 rounded-2xl overflow-hidden">
+                  <div className="w-full flex items-center justify-between p-3 md:p-4 bg-zinc-50">
+                    <div className="flex items-center gap-2 font-black text-zinc-900 tracking-wide text-sm">
+                      <span className="w-7 h-7 grid place-items-center rounded bg-blue-50 border border-blue-100" style={{ color: "#0284c7" }}>🖨️</span> ARTE DE PRODUCAO
+                      <span className="bg-white border border-zinc-200 rounded-full px-2 py-0.5 text-[10px]">{selected.arteProducaoUrls.length} imagem(ns)</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {selected.arteProducaoUrls.map((url, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setFullscreenUrl(url)}
+                          className="text-xs bg-white border border-zinc-200 rounded-full px-3 py-1.5 font-semibold text-blue-700 hover:bg-blue-50"
+                        >
+                          🔍 Ver arte {i + 1}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-3 md:p-4 bg-zinc-50 rounded-2xl overflow-auto max-h-[520px]">
+                    {selected.arteProducaoUrls.map((url, i) => (
+                      <div key={i} className="relative group rounded-xl overflow-hidden border border-zinc-200 bg-white aspect-[16/10] cursor-pointer" onClick={() => setFullscreenUrl(url)}>
+                        {renderArtePreview(url, `Arte producao ${i + 1}`)}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white font-black transition-opacity">🔍 Ver maior</div>
+                        {(canEditArteProducao && editMode && selected.etapa !== "PRODUCAO") && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); removerArteProducaoUrl(i); }}
+                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-xs hover:bg-red-700 shadow-sm"
+                            title="Excluir imagem"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {(canEditArteProducao && editMode && (selected.etapa === "IMPRESSAO" || selected.etapa === "FINALIZADO")) && (
+                    <div className="mt-2 flex gap-2 justify-end">
+                      <input
+                        ref={arteProdRef}
+                        type="file"
+                        accept={ARTE_ACEITOS}
+                        multiple
+                        className="hidden"
+                        onChange={async e => {
+                          const files = Array.from(e.target.files ?? [])
+                          if (files.length === 0) return
+                          const urls = await Promise.all(files.map(f => fileToDataUrl(f)))
+                          setTempArteProducaoUrls(urls)
+                        }}
+                      />
+                      <button
+                        onClick={() => arteProdRef.current?.click()}
+                        className="text-xs rounded-full px-4 py-2 font-bold text-white shadow-md"
+                        style={{ background: "#7c3aed" }}
+                      >
+                        🎨 {selected.arteProducaoUrls.length > 0 ? "Substituir arte producao" : "Enviar arte producao"}
+                      </button>
+                      {tempArteProducaoUrls.length > 0 && (
+                        <button
+                          onClick={() => {
+                            onSubstituirArteProducao(tempArteProducaoUrls)
+                            setTempArteProducaoUrls([])
+                          }}
+                          className="text-xs rounded-full px-3 py-2 font-black border border-zinc-300 text-zinc-700"
+                        >
+                          Confirmar
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </section>
+              )}
+              {/* Estado vazio arte preparada (etapas onde arte preparada é relevante) */}
+              {["ARTES", "IMPRESSAO", "PRODUCAO"].includes(selected.etapa) && selected.arteArteUrls.length === 0 && (
+                <section className="bg-zinc-50 border border-zinc-200 rounded-2xl p-3 md:p-4">
+                  <div className="flex items-center gap-2 font-black text-zinc-900 tracking-wide text-sm">
+                    <span className="w-7 h-7 grid place-items-center rounded bg-purple-50 border border-purple-100" style={{ color: "#7c3aed" }}>🎨</span> ARTE PREPARADA
+                  </div>

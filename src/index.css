@@ -1,0 +1,401 @@
+﻿@import 'tailwindcss';
+
+* { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+
+:root {
+  --stamper-red: #c1121f;
+  --stamper-red-dark: #8f0e19;
+  --stamper-red-light: #fff5f5;
+  --stamper-border: #fee2e2;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================================================================
+   FUNDO CINEMÁTICO PREMIUM — STAMPE CRIMSON INDUSTRY
+   Design: preto profundo, vermelho intenso, vinho escuro, linhas de precisão.
+   Sem dependências externas, sem Canvas, sem WebGL. Apenas CSS moderno.
+   ============================================================================ */
+
+html { background: #0a0a0a !important; }
+
+body {
+  background: #0a0a0a !important;
+  margin: 0;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- Paleta de cores (CSS custom properties) --- */
+:root {
+  --stamp-black: #070709;
+  --stamp-graphite: #111216;
+  --stamp-wine-dark: #1a0a0f;
+  --stamp-wine: #2d151c;
+  --stamp-crimson: #b5000c;
+  --stamp-crimson-vivid: #e11d48;
+  --stamp-wine-glow: #5a1a24;
+  --stamp-ink-white: #f5f5f5;
+  --stamp-ink-rose: #e4b8c1;
+}
+
+/* Remoção de fundo dos containers React (React pinta sobre o fundo do body) */
+#root, [id="root"] > div {
+  background: transparent !important;
+}
+
+/* ============================================================================
+   CAMADA A — BASE CINEMATOGRÁFICA (#stampe-bg)
+   Preto, grafite e vinho escuro, iluminação vermelha nas extremidades,
+   vinheta, textura sutil.
+   ============================================================================ */
+#stampe-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    /* camada base: preto profundo com tom de vinho no centro inferior */
+    radial-gradient(circle at 50% 60%, #140a0e 0%, #070709 55%, #050506 100%),
+    /* luz vermelha profunda nas extremidades superiores */
+    radial-gradient(circle at 15% 10%, rgba(193, 18, 31, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 85% 12%, rgba(127, 12, 23, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(193, 18, 31, 0.10) 0%, transparent 40%),
+    radial-gradient(circle at 90% 85%, rgba(127, 12, 23, 0.10) 0%, transparent 40%),
+    /* vinheta nas bordas para profundidade */
+    radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.55) 100%);
+  background-color: #070709;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* ============================================================================
+   CAMADA B — LINHAS LUMINOSAS DE PRECISÃO (#stampe-lines)
+   Trajetórias geométricas finas, curvas, que lembram fluxos industriais e
+   camadas de impressão. Concentradas nas laterais/cantos, nunca sobre o form.
+   ============================================================================ */
+#stampe-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Linha curva superior esquerda (fluxo de entrada) */
+#stampe-lines::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 6%;
+  width: 26vw;
+  height: 30vw;
+  border: 1px solid rgba(193, 18, 31, 0.35);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: rgba(225, 29, 72, 0.45);
+  border-left-color: rgba(225, 29, 72, 0.55);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(225, 29, 72, 0.35), inset 0 0 24px rgba(90, 26, 36, 0.4);
+  opacity: 0.85;
+  animation: stampe-line-pulse 14s ease-in-out infinite;
+}
+
+/* Linha curva inferior direita (fluxo de saída) */
+#stampe-lines::after {
+  content: "";
+  position: absolute;
+  bottom: 10%;
+  right: 7%;
+  width: 22vw;
+  height: 26vw;
+  border: 1px solid rgba(90, 26, 36, 0.45);
+  border-top-color: rgba(225, 29, 72, 0.5);
+  border-right-color: rgba(193, 18, 31, 0.35);
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(193, 18, 31, 0.3), inset 0 0 20px rgba(90, 26, 36, 0.35);
+  opacity: 0.75;
+  animation: stampe-line-pulse 16s ease-in-out infinite reverse;
+}
+
+/* Linha vertical fina lateral esquerda (precisão industrial) */
+.line-left {
+  position: absolute;
+  top: 12%;
+  left: 4%;
+  width: 1px;
+  height: 42%;
+  background: linear-gradient(to bottom, transparent, rgba(225, 29, 72, 0.5), transparent);
+  opacity: 0.55;
+  animation: stampe-line-glow 12s ease-in-out infinite;
+}
+
+/* Linha vertical fina lateral direita */
+.line-right {
+  position: absolute;
+  top: 18%;
+  right: 4%;
+  width: 1px;
+  height: 36%;
+  background: linear-gradient(to bottom, transparent, rgba(193, 18, 31, 0.45), transparent);
+  opacity: 0.5;
+  animation: stampe-line-glow 15s ease-in-out infinite reverse;
+}
+
+/* Trajetória convergente canto superior direito (perspectiva distante) */
+.line-corner-tr {
+  position: absolute;
+  top: 6%;
+  right: 6%;
+  width: 16vw;
+  height: 16vw;
+  border-top: 1px solid rgba(225, 29, 72, 0.35);
+  border-right: 1px solid rgba(228, 184, 193, 0.3);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: stampe-line-pulse 13s ease-in-out infinite;
+}
+
+/* Trajetória convergente canto inferior esquerdo */
+.line-corner-bl {
+  position: absolute;
+  bottom: 8%;
+  left: 8%;
+  width: 14vw;
+  height: 14vw;
+  border-bottom: 1px solid rgba(193, 18, 31, 0.3);
+  border-left: 1px solid rgba(228, 184, 193, 0.25);
+  border-radius: 50%;
+  opacity: 0.55;
+  animation: stampe-line-pulse 17s ease-in-out infinite reverse;
+}
+
+/* ============================================================================
+   CAMADA C — ILUMINAÇÃO DINÂMICA (bolas de luz difusas, respiração)
+   ============================================================================ */
+.glow-ball {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(64px);
+  pointer-events: none;
+  opacity: 0;
+  animation: stampe-glow-breathe 16s ease-in-out infinite;
+  z-index: 0;
+}
+.glow-ball--1 {
+  top: -12%;
+  left: -10%;
+  width: 52vw;
+  height: 52vw;
+  background: #b5000c;
+  animation-delay: 0s;
+  animation-name: stampe-glow-breathe-1;
+}
+.glow-ball--2 {
+  bottom: -14%;
+  right: -10%;
+  width: 44vw;
+  height: 44vw;
+  background: #5a1a24;
+  animation-delay: 4s;
+  animation-name: stampe-glow-breathe-2;
+}
+.glow-ball--3 {
+  top: 28%;
+  left: 4%;
+  width: 34vw;
+  height: 34vw;
+  background: #e11d48;
+  filter: blur(96px);
+  opacity: 0.18;
+  animation-delay: 8s;
+  animation-name: stampe-glow-breathe-3;
+}
+
+/* ============================================================================
+   CAMADA D — PARTÍCULAS DISCRETAS (#stampe-particles)
+   Pequenos pontos luminosos, lentos, poucas regiões. Sem excesso.
+   ============================================================================ */
+#stampe-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: stampe-particle-drift linear infinite;
+  z-index: 0;
+}
+/* Partícula superior esquerda */
+.p1 { width: 1.5px; height: 1.5px; top: 18%; left: 12%; animation-duration: 11s; animation-delay: 0s; }
+.p2 { width: 2px; height: 2px; top: 6%; left: 22%; animation-duration: 13s; animation-delay: 2s; background: #e11d48; box-shadow: 0 0 8px rgba(225, 29, 72, 0.7); }
+/* Partícula superior direita */
+.p3 { width: 1.5px; height: 1.5px; top: 12%; right: 14%; animation-duration: 10s; animation-delay: 1s; background: #e4b8c1; box-shadow: 0 0 6px rgba(228, 184, 193, 0.6); }
+.p4 { width: 2.5px; height: 2.5px; top: 4%; right: 8%; animation-duration: 15s; animation-delay: 3s; }
+/* Partícula inferior esquerda */
+.p5 { width: 1px; height: 1px; bottom: 20%; left: 10%; animation-duration: 14s; animation-delay: 1s; background: #e4b8c1; box-shadow: 0 0 5px rgba(228, 184, 193, 0.5); }
+.p6 { width: 1.5px; height: 1.5px; bottom: 12%; left: 4%; animation-duration: 12s; animation-delay: 4s; }
+/* Partícula inferior direita */
+.p7 { width: 2px; height: 2px; bottom: 18%; right: 12%; animation-duration: 16s; animation-delay: 0s; background: #e11d48; box-shadow: 0 0 9px rgba(225, 29, 72, 0.7); }
+.p8 { width: 1px; height: 1px; bottom: 6%; right: 4%; animation-duration: 11s; animation-delay: 2s; }
+
+/* ============================================================================
+   ANIMAÇÕES (suaves, reduzidas com prefers-reduced-motion)
+   ============================================================================ */
+@keyframes stampe-line-pulse {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.7; }
+  50% { transform: rotate(3deg) scale(1.04); opacity: 0.95; }
+}
+@keyframes stampe-line-glow {
+  0%, 100% { opacity: 0.45; transform: scaleY(1); }
+  50% { opacity: 0.85; transform: scaleY(1.05); }
+}
+@keyframes stampe-glow-breathe-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.30; }
+  50% { transform: translate(20px, 30px) scale(1.08); opacity: 0.42; }
+}
+@keyframes stampe-glow-breathe-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.22; }
+  50% { transform: translate(-25px, -20px) scale(1.06); opacity: 0.34; }
+}
+@keyframes stampe-glow-breathe-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.14; }
+  50% { transform: translate(30px, -20px) scale(1.12); opacity: 0.26; }
+}
+@keyframes stampe-particle-drift {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: 0.55; }
+  80% { opacity: 0.55; }
+  100% { transform: translate(30px, -40px); opacity: 0; }
+}
+
+/* Redução de movimento para usuários que preferem pouco movimento */
+@media (prefers-reduced-motion: reduce) {
+  #stampe-lines::before,
+  #stampe-lines::after,
+  .line-left,
+  .line-right,
+  .line-corner-tr,
+  .line-corner-bl,
+  .glow-ball,
+  .particle {
+    animation: none !important;
+    transition: none !important;
+  }
+  .glow-ball { opacity: 0.25 !important; }
+  .particle { opacity: 0.3 !important; }
+}
+
+/* ============================================================================
+   CAMADA DE ENTRADA — fade-in elegante da tela (não atrasa o acesso)
+   ============================================================================ */
+#root {
+  animation: stampe-fade-in 0.9s ease-out both;
+}
+@keyframes stampe-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================================
+   CARTAO DE LOGIN — vidro fosco elegante, sem aumentar o formulario
+   ============================================================================ */
+.stampe-glass {
+  background: rgba(255, 255, 255, 0.62) !important;
+  backdrop-filter: blur(20px) saturate(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.55),
+              0 0 0 1px rgba(193, 18, 31, 0.12);
+}
+.stampe-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 0.6px;
+  background: linear-gradient(135deg, rgba(193, 18, 31, 0.35), rgba(127, 12, 23, 0.25), rgba(90, 26, 36, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Título STAMPE com brilho discreto */
+.stampe-title-glow {
+  color: #0a0a0a;
+  text-shadow: 0 0 22px rgba(193, 18, 31, 0.55), 0 0 45px rgba(193, 18, 31, 0.35);
+}
+
+button, a { -webkit-tap-highlight-color: transparent; }
+
+button, a { -webkit-tap-highlight-color: transparent; }
+
+.print-document { display: none; }
+
+@page { size: A4; margin: 0; }
+
+/* ============================================================================
+   CONTRATO DE IMPRESSÃO (TAREFA-025) — NÃO ALTERAR SEM TESTE PDF
+   Classes estáveis que o @media print usa. Se mover/extrair componentes,
+   MANTENHA estas classes nos elementos correspondentes.
+   Teste: npm run build && (gerar PDF da OS) → deve dar 1 página A4, coluna 722px.
+   ============================================================================ */
+
+@media print {
+  /* Oculta UI da aplicação */
+  .no-print { display: none !important; }
+  .print-hide { display: none !important; }        /* alias estável para .fixed.inset-0 e afins */
+  .fixed.inset-0 { display: none !important; }     /* legacy: marca d'água/fundo */
+
+  /* Reset de página */
+  html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+
+  /* Oculta layout da app (header/nav/main/footer) — usa classe estável, não tags */
+  .print-hide-layout { display: none !important; }
+
+  /* Reset do container raiz — não depende de #root > div */
+  .print-root-reset {
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+  }
+
+  /* Documento da Ordem de Serviço */
+  .print-document {
+    display: grid !important;
+    grid-template-columns: 36px minmax(0, 1fr) 36px !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    align-items: stretch !important;
+    page-break-after: auto !important;
+  }
+  .print-document > div { box-shadow: none !important; }
+  .print-document .print-center { min-height: 100vh !important; }
+  .print-document .print-banner { position: relative !important; overflow: hidden !important; }
+  .print-document .print-clip { overflow: hidden !important; }
+
+  /* Garante cores em impressão */
+  button, a, input, select, textarea, * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+}
