@@ -2,7 +2,7 @@ export type Etapa = "PEDIDO" | "ARTES" | "IMPRESSAO" | "PRODUCAO" | "COSTURA" | 
 export type Role = "PEDIDO" | "ARTES" | "IMPRESSAO" | "PRODUCAO" | "ADMIN"
 
 /** Abas de navegacao da lista de pedidos. HISTORICO agrupa os pedidos ja finalizados. */
-export type Aba = "TODOS" | "PEDIDO" | "ARTES" | "IMPRESSAO" | "PRODUCAO" | "ENTREGA" | "HISTORICO"
+export type Aba = "TODOS" | "PEDIDO" | "ARTES" | "IMPRESSAO" | "PRODUCAO" | "COSTURA" | "ENTREGA" | "HISTORICO"
 
 export type Prioridade = "BAIXA" | "NORMAL" | "ALTA" | "URGENTE"
 

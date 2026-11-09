@@ -484,12 +484,9 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
             visual={visual}
             onPaginaChange={setPagina}
             onShowConfig={() => setShowConfig(true)}
-            onShowNovo={() => setShowNovoPedido(true)}
             onCadastroUsuarios={ehAdmin ? () => setShowCadastroUsuarios(true) : undefined}
             onShowCentroComando={ehAdmin ? () => setShowCentroComando(true) : undefined}
-            onShowPainelCostura={() => setShowPainelCostura(true)}
             onLogout={handleLogout}
-            canCriarPedido={canCriarPedido}
           />
           {ehAdmin && usuariosSemSenha.length > 0 && (
             <div className="max-w-[1280px] mx-auto px-4 mb-4">
@@ -537,6 +534,7 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
                   onSelect={setSelectedId}
                   onNovoPedido={() => setShowNovoPedido(true)}
                   canCriarPedido={canCriarPedido}
+                  aba={aba}
                 />
               </div>
             )}

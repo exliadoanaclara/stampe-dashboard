@@ -398,3 +398,65 @@ Removido o segundo botão "🎨 PERSONALIZAR" que aparecia na linha de abas do f
 - `git diff` → somente alterações autorizadas, sem arquivos adicionais não relacionados
 
 ---
+
+## 🆕 Sessão 09/11/2026 — Ajustes UI + Supabase Ativo + Deploy Vercel
+
+### 1. Ajustes na Interface (UI/UX)
+**Arquivos alterados:**
+- `src/domain/tipos.ts` — Adicionado `"COSTURA"` ao tipo `Aba`
+- `src/components/Tabs.tsx` — Aba **COSTURA** entre PRODUCAO e ENTREGA (cor `#ec4899`)
+- `src/components/Header.tsx` — **Removidos** botões: "Novo Pedido", "Progresso", "Costura"
+- `src/components/PedidoList.tsx` — Botão **"Novo Pedido" fixo no topo** (aba PEDIDOS)
+- `src/components/EmptyState.tsx` — Botão "Criar pedido" só na aba PEDIDOS
+- `src/App.tsx` — Header limpo; passa `aba` para PedidoList
+
+**Comportamento final:**
+1. Aba **COSTURA** no fluxo correto (Tabs, entre PRODUCAO e ENTREGA)
+2. Botão **"Novo Pedido"** só na aba **PEDIDOS** (não em VISÃO GERAL/TODOS)
+3. Botão **"Progresso"** removido do Header → acessa via **Personalizar** (ConfigProgresso)
+4. Botão **"Costura"** removido do Header
+5. **Centro de Comando** e **Usuários** mantidos no Header (só admin)
+
+---
+
+### 2. Supabase Ativo + Deploy Vercel
+- `.env` local atualizado: `VITE_USE_SUPABASE=true`
+- Tabelas Supabase criadas: `pedidos`, `usuarios`, `infos_*`, `historico`, `etapa_historico`
+- Bucket `artes` criado no Storage
+- RLS desativado (temporário para facilitar início)
+- **Vercel configurado** com 3 variáveis de ambiente (Produção):
+  - `VITE_SUPABASE_URL=https://vjagdnpbqzlykolybhqw.supabase.co`
+  - `VITE_SUPABASE_ANON_KEY=sb_publishable_...`
+  - `VITE_USE_SUPABASE=true`
+- Deploy em `https://stampe-dashboard.vercel.app/` com HTTPS automático
+
+---
+
+### 3. Verificações técnicas
+| Verificação | Status |
+|-------------|--------|
+| `npm run build` | ✅ Passa (96 módulos, 626KB JS) |
+| `npx tsc --noEmit` | ✅ Passa sem erros |
+| Testes unitários (101) | ✅ Passam |
+| `print.test.ts` | ⚠️ Pre-existente (precisa servidor Puppeteer porta 3030) |
+
+---
+
+### 4. Próximos passos (produção)
+1. Testar `https://stampe-dashboard.vercel.app/` (F12 → Console)
+2. Migrar dados localStorage → Supabase (Exportar backup → Importar)
+3. Ativar RLS no Supabase (policies por role)
+4. Habilitar Supabase Realtime para sincronização multi-usuário
+5. Validar com 2+ usuários simultâneos
+
+---
+
+### Resultado verificado
+- Build de produção aprovado
+- TypeScript aprovado
+- 101 testes unitários passando
+- Supabase ativo localmente e no Vercel
+
+---
+
+---

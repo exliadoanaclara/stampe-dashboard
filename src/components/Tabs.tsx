@@ -3,7 +3,7 @@ import type { Aba } from "../domain/tipos"
 interface TabsProps {
   aba: Aba
   pagina: "PEDIDOS" | "PERSONALIZAR"
-  stats: { todos: number; pedido: number; artes: number; impressao: number; producao: number; entrega: number; finalizado: number }
+  stats: { todos: number; pedido: number; artes: number; impressao: number; producao: number; costura: number; entrega: number; finalizado: number }
   cor2: string
   onAbaChange: (aba: Aba) => void
   onPaginaChange: (pagina: "PEDIDOS" | "PERSONALIZAR") => void
@@ -19,6 +19,7 @@ export function Tabs({ aba, pagina, stats, cor2, onAbaChange, onPaginaChange }: 
           { id: "ARTES", label: "ARTES", count: stats.artes, bg: "#a855f7" },
           { id: "IMPRESSAO", label: "IMPRESSAO", count: stats.impressao, bg: "#f59e0b" },
           { id: "PRODUCAO", label: "PRODUCAO", count: stats.producao, bg: "#0284c7" },
+          { id: "COSTURA", label: "COSTURA", count: stats.costura, bg: "#ec4899" },
           { id: "ENTREGA", label: "ENTREGA", count: stats.entrega, bg: "#059669" },
           { id: "HISTORICO", label: "HISTORICO", count: stats.finalizado, bg: "#0f766e" },
         ].map(tab => (

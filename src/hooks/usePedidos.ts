@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react"
-import type { Pedido, Etapa, Aba, ProgressConfig, UserState, VisualConfig, Prioridade, LimitesEtapa, StatusPrazo, HistoricoItem } from "../domain/tipos"
+import type { Pedido, Etapa, Aba, ProgressConfig, UserState, VisualConfig, Prioridade, LimitesEtapa, StatusPrazo, HistoricoItem, InfoItem, EtapaHist } from "../domain/tipos"
 import { fmtNumero } from "../domain/datas"
 import { motivoBloqueio as bloqueioDaFila } from "../domain/fila"
 import { getProgresso } from "../domain/progresso"
@@ -31,6 +31,7 @@ import {
 import { ETAPA_ANTERIOR, maxNumeroDoDia, semArte } from "../domain/regras"
 import * as storage from "../data/storage"
 import { criarRepo, type PedidosRepo } from "../data/repo"
+import { supabase } from "../data/supabase"
 
 function genId() {
   return Math.random().toString(36).slice(2, 9) + Date.now().toString(36)
@@ -245,6 +246,109 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
     }
     carregar()
     return () => { cancelado = true }
+  }, [])
+
+  // Supabase Realtime — sincroniza mudanças entre navegadores
+  useEffect(() => {
+    if (!import.meta.env.VITE_USE_SUPABASE || !supabase) return
+
+    const channel = supabase
+      .channel('stampe-pedidos-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pedidos' },
+        (payload) => {
+          console.log('[Realtime] pedidos:', payload)
+          const novo = payload.new as Pedido
+          const antigo = payload.old as Pedido
+
+          if (payload.eventType === 'INSERT' && novo) {
+            setPedidos(prev => [novo, ...prev.filter(p => p.id !== novo.id)])
+          } else if (payload.eventType === 'UPDATE' && novo) {
+            setPedidos(prev => prev.map(p => p.id === novo.id ? novo : p))
+          } else if (payload.eventType === 'DELETE' && antigo) {
+            setPedidos(prev => prev.filter(p => p.id !== antigo.id))
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'infos_impressao' },
+        (payload) => handleInfosChange('infosImpressao', payload)
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'infos_artes' },
+        (payload) => handleInfosChange('infosArtes', payload)
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'infos_producao' },
+        (payload) => handleInfosChange('infosProducao', payload)
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'infos_costura' },
+        (payload) => handleInfosChange('infosCostura', payload)
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'infos_entrega' },
+        (payload) => handleInfosChange('infosEntrega', payload)
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'historico' },
+        (payload) => handleHistoricoChange(payload)
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'etapa_historico' },
+        (payload) => handleEtapaHistoricoChange(payload)
+      )
+      .subscribe()
+
+    function handleInfosChange(tipo: keyof Pedido, payload: any) {
+      const novo = payload.new as InfoItem
+      const antigo = payload.old as InfoItem
+      if (payload.eventType === 'INSERT' && novo) {
+        setPedidos(prev => prev.map(p =>
+          p.id === novo.pedido_id
+            ? { ...p, [tipo]: [...p[tipo], novo] }
+            : p
+        ))
+      } else if (payload.eventType === 'DELETE' && antigo) {
+        setPedidos(prev => prev.map(p =>
+          p.id === antigo.pedido_id
+            ? { ...p, [tipo]: p[tipo].filter(i => i.id !== antigo.id) }
+            : p
+        ))
+      }
+    }
+
+    function handleHistoricoChange(payload: any) {
+      const novo = payload.new as HistoricoItem
+      if (payload.eventType === 'INSERT' && novo) {
+        setPedidos(prev => prev.map(p =>
+          p.id === novo.pedido_id
+            ? { ...p, historico: [novo, ...p.historico] }
+            : p
+        ))
+      }
+    }
+
+    function handleEtapaHistoricoChange(payload: any) {
+      const novo = payload.new as EtapaHist
+      if (payload.eventType === 'INSERT' && novo) {
+        setPedidos(prev => prev.map(p =>
+          p.id === novo.pedido_id
+            ? { ...p, etapaHistorico: [novo, ...p.etapaHistorico] }
+            : p
+        ))
+      }
+    }
+
+    return () => { supabase.removeChannel(channel) }
   }, [])
 
   useEffect(() => { storage.salvarSeq(seq) }, [seq])

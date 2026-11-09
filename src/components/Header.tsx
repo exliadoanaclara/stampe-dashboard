@@ -17,15 +17,12 @@ interface HeaderProps {
   }
   onPaginaChange: (pagina: "PEDIDOS" | "PERSONALIZAR") => void
   onShowConfig: () => void
-  onShowNovo: () => void
   onCadastroUsuarios?: () => void
   onShowCentroComando?: () => void
-  onShowPainelCostura?: () => void
   onLogout: () => void
-  canCriarPedido: boolean
 }
 
-export function Header({ user, visual, onPaginaChange, onShowConfig, onShowNovo, onCadastroUsuarios, onShowCentroComando, onShowPainelCostura, onLogout, canCriarPedido }: HeaderProps) {
+export function Header({ user, visual, onPaginaChange, onShowConfig, onCadastroUsuarios, onShowCentroComando, onShowPainelCostura, onLogout }: HeaderProps) {
   const cor1 = visual.corHeader
   const cor2 = visual.corHeader2
   const cor3 = visual.corHeader3
@@ -93,25 +90,9 @@ export function Header({ user, visual, onPaginaChange, onShowConfig, onShowNovo,
               <span>📊</span> Centro de Comando
             </button>
           )}
-          {((user.roles ?? []).includes("PRODUCAO") || (user.roles ?? []).includes("ADMIN")) && onShowPainelCostura && (
-            <button
-              onClick={onShowPainelCostura}
-              className="text-xs md:text-sm bg-purple-600 hover:bg-purple-700 text-white border-2 border-solid border-purple-700 rounded-full px-3 py-1.5 flex items-center gap-1.5 font-bold shadow-md"
-            >
-              <span>🧵</span> Costura
-            </button>
-          )}
           <button onClick={() => onPaginaChange("PERSONALIZAR")} className="text-xs md:text-sm bg-white border-2 border-solid border-zinc-700 rounded-full px-3 py-1.5 hover:bg-zinc-50 flex items-center gap-1.5 font-bold">
             <span>🎨</span> Personalizar
           </button>
-          <button onClick={onShowConfig} className="text-xs md:text-sm bg-white border-2 border-solid border-zinc-700 rounded-full px-3 py-1.5 hover:bg-zinc-50 hidden sm:flex items-center gap-1.5">
-            <span>⚙️</span> Progresso
-          </button>
-          {canCriarPedido && (
-            <button onClick={onShowNovo} className="text-xs md:text-sm font-bold text-white rounded-full px-4 md:px-5 py-1.5 md:py-2 shadow-md flex items-center gap-2" style={{ background: cor2 }}>
-              <span className="text-lg leading-none">＋</span> <span className="hidden md:inline">Novo Pedido</span><span className="md:hidden">Novo</span>
-            </button>
-          )}
         </div>
       </div>
     </header>

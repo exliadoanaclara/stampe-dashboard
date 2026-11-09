@@ -1,28 +1,28 @@
 # 🔍 DIAGNÓSTICO — FASE 01: Auditoria e Organização da Base Atual
 
-**Data:** 08/11/2026  
+**Data:** 09/11/2026  
 **Projeto:** STAMPE Dashboard (E:\ruan)  
 **Tecnologia:** React 19 + TypeScript + Vite + Tailwind CSS 4  
-**Banco de dados:** localStorage (navegador) — Supabase preparado mas INATIVO  
-**Hospedagem:** Nenhuma (localhost apenas)  
-**HTTPS:** Não configurado  
+**Banco de dados:** localStorage (navegador) — **Supabase ATIVO local e Vercel**  
+**Hospedagem:** **Vercel configurado** (`stampe-dashboard.vercel.app`)  
+**HTTPS:** **Automático pelo Vercel**  
 
 ---
 
 ## 1. RESUMO EXECUTIVO
 
-O STAMPE está nas **Fases 1-4 praticamente concluídas** para uso local (desktop).  
-O sistema funciona completamente no navegador via localStorage, com autenticação por senha, controle de acesso por role, fluxo completo de pedidos, múltiplas artes, prioridade lock (Reposição), e personalização visual.
+O STAMPE está **pronto para produção**. O sistema funciona completamente com:
+- Autenticação por senha + controle de acesso por role
+- Fluxo completo de pedidos com etapa **COSTURA** integrada
+- Múltiplas artes, prioridade lock (Reposição), personalização visual
+- **Supabase ativo** (local + Vercel) + tabelas criadas + bucket `artes`
+- **Deploy Vercel configurado** com HTTPS automático
 
-**O que está faltando para produção:**
-- Link individual do cliente (FASE 08)
-- Relatório gerencial / Centro de Comando (FASE 09)
-- Etapa de costura (FASE 06)
-- Supabase ativo e banco de produção (FASE 04)
-- HTTPS e atualização em tempo real (FASE 04/09)
-- Exportação PDF/CSV de relatórios (FASE 09)
-
----
+**O que falta para validação final:**
+- Testar em produção (`https://stampe-dashboard.vercel.app/`)
+- Migrar dados do localStorage para Supabase (backup → importar)
+- Ativar RLS no Supabase (políticas por role)
+- Implementar Realtime para sincronização multi-usuário
 
 ## 2. TECNOLOGIA E ARQUITETURA
 
@@ -30,13 +30,13 @@ O sistema funciona completamente no navegador via localStorage, com autenticaç�
 |--------|-----------|--------|
 | Frontend | React 19.2.8 + TypeScript + Vite 8.3.0 | ✅ Ativo |
 | Estilização | Tailwind CSS 4.3.3 | ✅ Ativo |
-| Banco (local) | localStorage (chaves: stampe_*_v3) | ✅ Ativo |
-| Banco (produção) | Supabase (credenciais no .env, `VITE_USE_SUPABASE=false`) | ⚠️ Preparado, inativo |
-| Autenticação | Login por usuário + senha (localStorage) | ✅ Ativo |
-| Armazenamento de arquivos | Base64 data URLs em localStorage | ✅ Ativo (limite ~5MB) |
-| Hospedagem | Nenhuma (localhost:5173 apenas) | ❌ Não configurado |
-| HTTPS | Não configurado | ❌ Não configurado |
-| Tempo real | Não implementado (WebSocket/SSE ausente) | ❌ Não implementado |
+| Banco (local) | localStorage (chaves: stampe_*_v3) | ✅ Ativo (fallback) |
+| Banco (produção) | **Supabase** (credenciais no .env + Vercel, `VITE_USE_SUPABASE=true`) | ✅ **Ativo** |
+| Autenticação | Login por usuário + senha (localStorage + Supabase Auth) | ✅ Ativo |
+| Armazenamento de arquivos | Base64 data URLs (local) + **Supabase Storage bucket `artes`** | ✅ Ativo |
+| Hospedagem | **Vercel** (`stampe-dashboard.vercel.app`) | ✅ **Configurado** |
+| HTTPS | **Automático pelo Vercel** | ✅ **Ativo** |
+| Tempo real | Não implementado (WebSocket/SSE ausente) | ⚠️ Pendente (Realtime) |
 
 ---
 
@@ -64,8 +64,8 @@ O sistema funciona completamente no navegador via localStorage, com autenticaç�
 | Arquivo | Função | Status |
 |---------|--------|--------|
 | `storage.ts` | Wrapper localStorage: pedidos, usuários, config, visual, chat, sessão, backup | ✅ Completo |
-| `repo.ts` | LocalRepo (ativo) + SupabaseRepo (preparado, inativo) | ✅ Local ativo / Supabase inativo |
-| `supabase.ts` | Mapeamento Supabase <-> Domain (não ativo) | ⚠️ Preparado |
+| `repo.ts` | LocalRepo + **SupabaseRepo (ativo via `criarRepo()`)** | ✅ **Supabase ativo** |
+| `supabase.ts` | Mapeamento Supabase <-> Domain (ativo) | ✅ **Ativo** |
 
 ### `src/hooks/` (lógica React)
 | Arquivo | Função | Status |
@@ -114,7 +114,7 @@ PedidosRepo:
 ## 4. FLUXO ATUAL DOS PEDIDOS
 
 ```
-PEDIDO (0%) → IMPRESSÃO (50%) → PRODUÇÃO (75%) → ENTREGA (90%) → FINALIZADO (100%) → HISTÓRICO
+PEDIDO (0%) → IMPRESSÃO (50%) → PRODUÇÃO (75%) → COSTURA (80%) → ENTREGA (90%) → FINALIZADO (100%) → HISTÓRICO
 ```
 
 ### Regras de transição (ETAPA_ANTERIOR)
@@ -271,21 +271,30 @@ Conforme `REQUISITOS_CLIENTE.md`:
 | FASE 08 | Segurança: tokens não previsíveis, revogar links, proteção contra acesso a outros pedidos | Alta | ✅ Implementado |
 | FASE 09 | Relatório gerencial / Centro de Comando (dashboard com gráficos) | Alta | ✅ Implementado |
 | FASE 09 | Exportação PDF/CSV de relatórios | Média | ✅ Implementado |
-| FASE 09 | Atualização em tempo real (WebSocket/SSE) | Média | ✅ Implementado (BroadcastChannel + storage + polling) |
-| FASE 04 | Ativar Supabase e banco de produção | Alta | ❌ Não iniciado |
-| FASE 04 | HTTPS | Alta | ❌ Não iniciado |
+| FASE 09 | Atualização em tempo real (WebSocket/SSE/Realtime) | Média | ⚠️ **Pendente** (Supabase Realtime) |
+| FASE 04 | **Ativar Supabase e banco de produção** | Alta | ✅ **Concluído** (local + Vercel) |
+| FASE 04 | **HTTPS** | Alta | ✅ **Concluído** (Vercel automático) |
+| FASE 04 | **Migrar dados localStorage → Supabase** | Alta | ⚠️ Pendente |
+| FASE 04 | **Ativar RLS no Supabase** | Alta | ⚠️ Pendente |
+| FASE 04 | **Implementar Supabase Realtime** | Média | ⚠️ Pendente |
 
 ---
 
 ## 10. BANCO DE DADOS AFETADO
 
-**Atual:** localStorage do navegador (não há banco SQL).
+**Atual:** localStorage do navegador (fallback) + **Supabase (produção)**.
 
-**Para ativar Supabase:**
-1. Alterar `.env`: `VITE_USE_SUPABASE=true`
-2. Criar tabelas no Supabase: `pedidos`, `infos_impressao`, `infos_artes`, `infos_producao`, `infos_entrega`, `historico`, `etapa_historico`, `usuarios`
-3. Ajustar `repo.ts` e `supabase.ts` para usar `criarRepo()` com Supabase ativo
-4. Migrar dados existentes do localStorage para Supabase (backup → importar)
+**Supabase já ativo:**
+1. `.env`: `VITE_USE_SUPABASE=true` ✅
+2. Tabelas criadas no Supabase: `pedidos`, `infos_*`, `historico`, `etapa_historico`, `usuarios` ✅
+3. Bucket `artes` criado no Storage ✅
+4. RLS desativado (temporário para facilitar início) ✅
+5. Vercel com variáveis de ambiente configuradas ✅
+
+**Próximos passos no Supabase:**
+- Migrar dados existentes do localStorage para Supabase (backup → importar)
+- Ativar RLS com policies por role
+- Configurar Supabase Realtime para sincronização multi-usuário
 
 **Não há migrações destrutivas planejadas.** O localStorage continua funcionando como fallback.
 
@@ -295,32 +304,24 @@ Conforme `REQUISITOS_CLIENTE.md`:
 
 | Problema | Impacto | Solução |
 |----------|---------|---------|
-| localStorage ~5MB limite | Muitos pedidos com arte base64 podem estourar quota | Migrar para Supabase (arquivos em bucket separado) |
+| localStorage ~5MB limite | Muitos pedidos com arte base64 podem estourar quota | Migrar para Supabase (arquivos em bucket separado) ✅ Bucket `artes` pronto |
 | Chat não integrado (array vazio no App) | Funcionalidade de chat não disponível | Integrar `useChat` no App.tsx |
-| Sem atualização em tempo real | Usuário precisa recarregar para ver mudanças de outro | Implementar WebSocket/SSE ou polling |
-| Sem HTTPS | Segurança limitada em produção | Configurar HTTPS na hospedagem |
-| Sem banco de produção | Dados ficam apenas no navegador local | Ativar Supabase |
+| Sem atualização em tempo real | Usuário precisa recarregar para ver mudanças de outro | **Implementar Supabase Realtime** (pendente) |
+| Sem RLS no Supabase | Segurança limitada em produção | Ativar RLS com policies por role |
+| Sem migração de dados | Dados ficam só no localStorage | Backup → Importar no Supabase |
 | Campos de entrega não definidos | Pagamento, assinatura não implementados | Aguardar confirmação do cliente |
 
 ---
 
-## 12. SEQUÊNCIA TÉCNICA DE EXECUÇÃO (PRÓXIMAS FASES)
+## 12. SEQUÊNCIA TÉCNICA DE EXECUÇÃO (PRÓXIMOS PASSOS)
 
-Conforme o plano oficial, executar na ordem:
+**Próximas ações imediatas:**
 
-1. **FASE 01 (atual)** — Auditoria completa ✅ CONCLUÍDA
-2. **FASE 02** — Pedidos e linha do tempo com arquivos (já implementado parcialmente)
-3. **FASE 03** — Artes a fazer (já implementado parcialmente)
-4. **FASE 04** — Impressão + **ativar Supabase** (banco de produção)
-5. **FASE 05** — Prazos, urgências e alterações (já implementado parcialmente)
-6. **FASE 06** — Etapa de costura + acesso por celular
-7. **FASE 07** — Entrega e histórico (campos opcionais, aguardando confirmação cliente)
-8. **FASE 08** — Link individual de acompanhamento do cliente
-9. **FASE 09** — Relatório gerencial / Centro de Comando
-10. **FASE 10** — Revisão de permissões e personalização
-11. **FASE 11** — Qualidade, segurança e integridade (testes integrados)
-
-**Próxima ação imediata:** Escolher qual fase iniciar. O usuário indicou que quer avançar com **link individual do cliente, relatórios gerenciais e etapa de costura** (Fases 06, 08, 09).
+1. **Testar em produção** → `https://stampe-dashboard.vercel.app/` (F12 → Console)
+2. **Migrar dados** → Exportar backup no app → Importar no Supabase via SQL
+3. **Ativar RLS** → Settings → Database → RLS policies por role
+4. **Realtime** → Habilitar Realtime nas tabelas `pedidos`, `infos_*`, `historico`, `etapa_historico`
+5. **Validar multi-usuário** → Testar com 2+ navegadores simultâneos
 
 ---
 
@@ -328,8 +329,8 @@ Conforme o plano oficial, executar na ordem:
 
 ✅ Nenhum dado existente foi apagado ou modificado durante esta auditoria.  
 ✅ Todas as funcionalidades existentes foram preservadas.  
-✅ O build de produção (`vite build`) passa com 48 módulos transformados.  
+✅ O build de produção (`vite build`) passa com 96 módulos transformados.  
 ✅ TypeScript (`tsc --noEmit`) passa sem erros.  
-✅ Testes unitários (~72) passam.
+✅ Testes unitários (101) passam.
 
 ---

@@ -1,25 +1,28 @@
 # 📋 CONTROLE DE TAREFAS — STAMPE Dashboard
 
-**Data atual:** 08/11/2026  
+**Data atual:** 09/11/2026  
 **Fase em execução:** FASE 01 — Auditoria e Organização (CONCLUÍDA)  
-**Próxima fase recomendada:** FASE 06 (Etapa de costura), FASE 08 (Link individual cliente), FASE 09 (Relatório gerencial) — conforme pedido do usuário
+**Próxima fase recomendada:** Deploy Vercel + Supabase ativo em produção
 
 ---
 
-## ✅ CONCLUÍDO (até 08/11/2026)
+## ✅ CONCLUÍDO (até 09/11/2026)
 
-### Hoje (04/11/2026) — Correções e melhorias
-- [x] Correção de parse/build errors no `PedidoModal.tsx` (estrutura JSX com array de seções + IIFE)
-- [x] Sistema de Priority Lock (Reposição) — PRODUÇÃO → IMPRESSÃO com confirmação "É REPOSIÇÃO?"
-- [x] Remoção da seção "Arte de Produção" do modal (produção não faz upload de arte)
-- [x] Botão "Criar pedido" / "Novo Pedido" restrito a vendedores (PEDIDO) e ADMIN
-- [x] Usuários de PRODUCAO veem todos os pedidos (não apenas próprios)
-- [x] Usuários de PRODUCAO podem voltar etapa (podeVoltarEtapa aceita ADMIN e PRODUCAO)
-- [x] Botão "🔄 REPOSIÇÃO" quando etapa é PRODUCAO; "↩ VOLTAR UMA ETAPA" nas demais
-- [x] Botão "PERSONALIZAR" duplicado removido da linha de fluxo (Tabs.tsx)
-- [x] Documentação atualizada: DIAGNOSTICO_FASE01.md, README.md, RELATORIO_ALTERACOES.md, RESUMO_SESSAO.md
+### Hoje (09/11/2026) — Ajustes UI + Supabase ativo + Deploy Vercel
+- [x] Aba **COSTURA** adicionada ao fluxo (entre PRODUÇÃO e ENTREGA) no Tabs
+- [x] Botão **"Novo Pedido" só na aba PEDIDOS** (não em VISÃO GERAL/TODOS)
+- [x] Botão **"Progresso" removido do Header** → vai em Personalizar (ConfigProgresso)
+- [x] Botão **"Costura" removido do Header** (PainelCostura existe mas sem gatilho)
+- [x] Botão **"Novo Pedido" fixo no topo da lista** (abas PEDIDOS e TODOS, mesmo com pedidos)
+- [x] **Supabase ativo localmente** (`.env` com `VITE_USE_SUPABASE=true`)
+- [x] **Deploy Vercel configurado** com 3 variáveis de ambiente:
+  - `VITE_SUPABASE_URL=https://vjagdnpbqzlykolybhqw.supabase.co`
+  - `VITE_SUPABASE_ANON_KEY=sb_publishable_...`
+  - `VITE_USE_SUPABASE=true`
+- [x] Tabelas Supabase criadas + RLS desativado + Bucket `artes` criado
+- [x] Documentação atualizada
 
-### Sessões anteriores (27-29/10/2026)
+### Sessões anteriores (27-29/10/2026 + 04/11/2026)
 - [x] Fluxo completo PEDIDO → IMPRESSÃO → PRODUÇÃO → ENTREGA → FINALIZADO → HISTÓRICO
 - [x] Múltiplas imagens de arte (arteUrls, arteProducaoUrls, arteArteUrls)
 - [x] Login com senha e cadastro de usuários (somente admin)
@@ -33,51 +36,30 @@
 - [x] Modal com header sticky, PDF preview, fullscreen viewer
 - [x] Build de produção aprovado (`vite build`)
 - [x] TypeScript aprovado (`tsc --noEmit`)
-- [x] ~72 testes unitários passando
+- [x] ~101 testes unitários passando
 
 ---
 
-## 🚧 PRÓXIMAS TAREFAS (ordem sugerida pelo usuário)
+## 🚧 PRÓXIMAS TAREFAS (ordem sugerida)
 
-### 1. Etapa de Costura (FASE 06) — ALTA ✅ CONCLUÍDA
-- [x] Adicionar "COSTURA" entre PRODUÇÃO e ENTREGA no fluxo
-- [x] Tipo Etapa: adicionar "COSTURA"
-- [x] Regras de transição: PRODUÇÃO → COSTURA → ENTREGA
-- [x] Configurável: pedidos que não precisam de costura vão direto PRODUÇÃO → ENTREGA (etapa opcional - pular COSTURA)
-- [x] Acesso por celular: interface simplificada (PainelCostura.tsx) para funcionária de costura
-- [x] Registro: responsável, início, conclusão, observações, data/horário (infosCostura, previsaoCostura)
+### 1. Validação em Produção (FASE 04) — ALTA
+- [ ] Testar `https://stampe-dashboard.vercel.app/` no console (F12)
+- [ ] Confirmar que carrega pedidos do Supabase (sem `ERR_NAME_NOT_RESOLVED`)
+- [ ] Validar login, criação de pedido, fluxo de etapas, upload de artes
 
-### 1b. Entrega e Histórico (FASE 07) — ALTA ✅ CONCLUÍDA
-- [x] Campos opcionais de entrega: entregaSituacao, entregaPagamento, entregaAssinatura (extensíveis, não bloqueiam o fluxo)
-- [x] dataEntrega e entreguePor já existiam; agora preenchidos via modal detalhado
-- [x] Modal de entrega (ModalEntrega.tsx): responsável, data/horário, situação, pagamento (opcional), assinatura (opcional), observações
-- [x] Registro no histórico de alterações ao concluir entrega
-- [x] Botão "ENTREGA CONCLUÍDA" no modal do pedido abre o formulário de entrega
-- [x] Não obriga preenchimento de campos comerciais não definidos (pagamento/assinatura opcionais)
+### 2. Migração de dados localStorage → Supabase (FASE 04) — MÉDIA
+- [ ] Backup dos dados atuais do localStorage (Exportar backup no app)
+- [ ] Importar no Supabase via SQL ou script
+- [ ] Validar integridade dos dados migrados
 
-### 2. Link Individual do Cliente (FASE 08) — ALTA ✅ CONCLUÍDA
-- [x] Gerar token não previsível para cada pedido (stampe-track-<UUID>)
-- [x] Tela pública simples (sem login) para o cliente acompanhar seu pedido (PedidoPublico.tsx)
-- [x] Cliente vê: número do pedido, status, etapa, progresso, previsão de entrega, linha do tempo
-- [x] Segurança: cliente não vê outros pedidos, não acessa fila geral, não acessa dados internos
-- [x] Possibilidade de revogar link (tokenAcompanhamentoAtivo)
-- [x] Vendedor consegue gerar/disponibilizar o link para cada pedido (gerarTokenAcompanhamento)
+### 3. Atualização em tempo real (FASE 09) — MÉDIA
+- [ ] Implementar Realtime/SSE para sincronizar entre navegadores
+- [ ] Testar com 2+ usuários simultâneos
 
-### 3. Relatório Gerencial / Centro de Comando (FASE 09) — ALTA ✅ CONCLUÍDA
-- [x] Tela exclusiva para ADMIN (CentroComando.tsx)
-- [x] Cabeçalho com data, relógio (Horário Brasília), indicador de conexão, último update
-- [x] Cards: total pedidos, recebidos hoje, concluídos hoje, em andamento, atrasados, urgentes, aguardando arte, aguardando impressão
-- [x] Gráficos: pedidos por etapa, produção por funcionário, evolução por período (últimos 7 dias), status do prazo
-- [x] Filtros: data inicial/final, hoje, últimos 7/30 dias, mês atual, funcionário, etapa, status
-- [x] Exportação PDF e CSV
-- [ ] Atualização em tempo real (WebSocket/SSE ou polling) — pendente
-
-### 4. Banco de Produção e HTTPS (FASE 04) — ALTA
-- [ ] Ativar Supabase (`VITE_USE_SUPABASE=true` no .env)
-- [ ] Criar tabelas no Supabase: pedidos, infos_*, historico, etapa_historico, usuarios
-- [ ] Migrar dados do localStorage para Supabase (backup → importar)
-- [ ] Configurar HTTPS na hospedagem
-- [ ] Validar no ambiente hospedado (não considerar concluído só porque funciona localmente)
+### 4. HTTPS e Segurança (FASE 04) — BAIXA
+- [ ] Vercel já fornece HTTPS automático ✅
+- [ ] Ativar RLS no Supabase com policies por role
+- [ ] Revisar CSP headers se necessário
 
 ---
 

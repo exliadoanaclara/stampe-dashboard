@@ -19,6 +19,9 @@ if (supabaseUrl && supabaseAnonKey) {
   supabase = createClient(supabaseUrl, supabaseAnonKey);
 }
 
+// Export for Realtime usage
+export { supabase }
+
 /**
  * Converts a raw pedido from the database to the domain Pedido type.
  * Assumes the database schema matches the domain types (enums as strings, dates as ISO strings, etc.).
