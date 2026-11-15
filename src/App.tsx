@@ -717,6 +717,11 @@ export default function App() {
 
   const { login, criarSenhaPrimeiroAcesso } = useAuth()
 
+  const handleLogout = useCallback(() => {
+    storage.limparSessao()
+    setSessao(null)
+  }, [])
+
   // Detecta se a URL tem ?token=... (cliente acessando link publico de acompanhamento)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
