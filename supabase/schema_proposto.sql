@@ -41,14 +41,13 @@
 -- ---------------------------------------------------------------------------
 -- 1. TIPOS ENUM
 -- ---------------------------------------------------------------------------
--- PEND-018 (decidido): fluxo PEDIDO → IMPRESSAO → FINALIZACAO → ENTREGA → FINALIZADO.
--- ⚠️ O código atual ainda não tem ENTREGA: entrada na Fase 3 (PROBLEMA-016).
--- ARTE NÃO entra (PEND-008): a arte continua sendo feita dentro de PEDIDO.
+-- Fluxo atual do código (tipos.ts): PEDIDO → ARTES → IMPRESSAO → PRODUCAO → COSTURA → ENTREGA → FINALIZADO.
+-- ARTE é etapa distinta (PEND-008 revisado: ARTES existe no código).
 -- ---------------------------------------------------------------------------
-create type etapa as enum ('PEDIDO', 'IMPRESSAO', 'FINALIZACAO', 'ENTREGA', 'FINALIZADO');
+create type etapa as enum ('PEDIDO', 'ARTES', 'IMPRESSAO', 'PRODUCAO', 'COSTURA', 'ENTREGA', 'FINALIZADO');
 
--- PEND-006 (decidido): 4 perfis, sem Arte (DECISÃO-009 prevalece sobre o §14).
-create type perfil as enum ('PEDIDO', 'IMPRESSAO', 'FINALIZACAO', 'ADMIN');
+-- PEND-006 (decidido): perfis refletem os Roles do código (tipos.ts).
+create type perfil as enum ('PEDIDO', 'ARTES', 'IMPRESSAO', 'PRODUCAO', 'COSTURA', 'ADMIN');
 
 -- PEND-007 (decidido): prioridade entra no modelo. Rótulos/valores são
 -- rascunho — confirmar na Fase 3 junto com `itens`.
@@ -104,7 +103,7 @@ create table pedidos (
   data_criacao         timestamptz not null default now(),
   data_atualizacao     timestamptz not null default now(),
   previsao_impressao   date,
-  previsao_finalizacao date,
+  previsao_producao    date,
   data_entrega         timestamptz,                      -- PEND-018 ✔ (etapa ENTREGA)
   entregue_por         text,                             -- PEND-018 ✔
   data_finalizacao     timestamptz,

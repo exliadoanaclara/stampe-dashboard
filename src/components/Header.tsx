@@ -16,13 +16,12 @@ interface HeaderProps {
     corHeader3: string
   }
   onPaginaChange: (pagina: "PEDIDOS" | "PERSONALIZAR") => void
-  onShowConfig: () => void
   onCadastroUsuarios?: () => void
   onShowCentroComando?: () => void
   onLogout: () => void
 }
 
-export function Header({ user, visual, onPaginaChange, onShowConfig, onCadastroUsuarios, onShowCentroComando, onShowPainelCostura, onLogout }: HeaderProps) {
+export function Header({ user, visual, onPaginaChange, onCadastroUsuarios, onShowCentroComando, onLogout }: HeaderProps) {
   const cor1 = visual.corHeader
   const cor2 = visual.corHeader2
   const cor3 = visual.corHeader3

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import type { Pedido, InfoItem, VisualConfig, Etapa, ProgressConfig } from "../domain/tipos"
+import type { Pedido, VisualConfig, Etapa, ProgressConfig } from "../domain/tipos"
 import { ARTE_ACEITOS } from "../domain/tipos"
 import { fmtNumero, fmtData, fmtDataHora } from "../domain/datas"
 
@@ -78,43 +78,24 @@ interface PedidoModalProps {
   config: ProgressConfig
   canEditResumo: boolean
   editMode: boolean
-  setEditMode: (v: boolean) => void
-  showHistorico: boolean
-  setShowHistorico: (v: boolean) => void
-  tempInfoImp: string
-  setTempInfoImp: (v: string) => void
-  tempInfoArtes: string
-  setTempInfoArtes: (v: string) => void
-  tempInfoFin: string
-  setTempInfoFin: (v: string) => void
-  tempInfoEntrega: string
-  setTempInfoEntrega: (v: string) => void
-  tempInfoCostura: string
-  setTempInfoCostura: (v: string) => void
-  previsaoEdit: { id: string; imp: string; fin: string } | null
-  canEditImpressao: boolean
-  canEditArtes: boolean
-  canEditProducao: boolean
-  canEditEntrega: boolean
-  canEditCostura: boolean
-  tokenAcompanhamento?: string
-  tokenAcompanhamentoAtivo?: boolean
-  onGerarLink?: () => void
-  onRevogarLink?: () => void
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>
   canEditArteUrl: boolean
   canEditArteArte: boolean
-  canEditArteProducao: boolean
+  podeVoltarEtapa: boolean
+  podeCancelar: boolean
+  podeReabrir: boolean
+  podeEntregaConcluida: boolean
+  motivoBloqueio: (p: Pedido, destino: Etapa) => string | null | undefined
   canEnviarParaArtes: boolean
   canEnviarParaImpressao: boolean
   canEnviarParaProducao: boolean
   canEnviarParaCostura: boolean
   canEnviarParaEntrega: boolean
   canFinalizar: boolean
-  podeVoltarEtapa: boolean
-  podeCancelar: boolean
-  podeReabrir: boolean
-  podeEntregaConcluida: boolean
-  motivoBloqueio: (p: Pedido, destino: Etapa) => string | null
+  tokenAcompanhamento?: string
+  tokenAcompanhamentoAtivo?: boolean
+  onGerarLink?: () => void
+  onRevogarLink?: () => void
   onClose: () => void
   onPrint: () => void
   onSalvarEdicao: (formData: FormData) => void
@@ -130,68 +111,35 @@ interface PedidoModalProps {
   onCancelar: () => void
   onSubstituirArte: (urls: string[]) => void
   onSubstituirArteArte: (urls: string[]) => void
-  onSubstituirArteProducao: (urls: string[]) => void
-  onAddInfoImpressao: () => void
-  onAddInfoArtes: () => void
-  onAddInfoProducao: () => void
-  onAddInfoCostura: () => void
-  onAddInfoEntrega: () => void
-  onSalvarPrevisaoImp: () => void
-  onSalvarPrevisaoFin: () => void
-  onSalvarPrevisaoCostura: () => void
-  onSalvarPrevisaoEntrega: () => void
-  onEditarPrevisao: (imp: string, fin: string) => void
 }
 
 export function PedidoModal({
   selected, prog, cor2, visual, config,
-  canEditResumo, editMode, setEditMode, showHistorico, setShowHistorico,
-  tempInfoImp, setTempInfoImp, tempInfoArtes, setTempInfoArtes, tempInfoFin, setTempInfoFin, tempInfoEntrega, setTempInfoEntrega, tempInfoCostura, setTempInfoCostura,
-  previsaoEdit, canEditImpressao, canEditArtes, canEditProducao, canEditEntrega, canEditCostura, canEditArteUrl, canEditArteArte, canEditArteProducao,
+  canEditResumo, editMode, setEditMode,
+  canEditArteUrl, canEditArteArte,
+  podeVoltarEtapa, podeCancelar, podeReabrir, podeEntregaConcluida, motivoBloqueio,
   canEnviarParaArtes, canEnviarParaImpressao, canEnviarParaProducao, canEnviarParaCostura, canEnviarParaEntrega, canFinalizar,
   tokenAcompanhamento, tokenAcompanhamentoAtivo,
   onGerarLink, onRevogarLink,
-  podeVoltarEtapa, podeCancelar, podeReabrir, podeEntregaConcluida, motivoBloqueio,
   onClose, onPrint, onSalvarEdicao, onEnviarParaArtes, onEnviarParaImpressao,
   onEnviarParaProducao, onEnviarParaCostura, onEnviarParaEntrega, onEntregaConcluida, onFinalizar, onReabrir, onVoltarEtapa, onCancelar,
-  onSubstituirArte, onSubstituirArteArte, onSubstituirArteProducao, onAddInfoImpressao, onAddInfoArtes, onAddInfoProducao, onAddInfoCostura, onAddInfoEntrega,
-  onSalvarPrevisaoImp, onSalvarPrevisaoFin, onSalvarPrevisaoCostura, onSalvarPrevisaoEntrega, onEditarPrevisao
+  onSubstituirArte, onSubstituirArteArte
 }: PedidoModalProps) {
   const [tempArteUrls, setTempArteUrls] = useState<string[]>([])
   const [tempArteArteUrls, setTempArteArteUrls] = useState<string[]>([])
-  const [tempArteProducaoUrls, setTempArteProducaoUrls] = useState<string[]>([])
   const [fullscreenUrl, setFullscreenUrl] = useState<string | null>(null)
   const artePrepRef = useRef<HTMLInputElement>(null)
   const arteOrigRef = useRef<HTMLInputElement>(null)
-  const arteProdRef = useRef<HTMLInputElement>(null)
   const artePrepEmptyRef = useRef<HTMLInputElement>(null)
   const arteOrigEmptyRef = useRef<HTMLInputElement>(null)
-  const arteProdEmptyRef = useRef<HTMLInputElement>(null)
 
   const removerArteUrl = (index: number) => {
     const atualizadas = selected.arteUrls.filter((_, i) => i !== index)
     onSubstituirArte(atualizadas)
   }
 
-  const removerArteProducaoUrl = (index: number) => {
-    const atualizadas = selected.arteProducaoUrls.filter((_, i) => i !== index)
-    onSubstituirArteProducao(atualizadas)
-  }
-
-  const removerArteArteUrl = (index: number) => {
-    const atualizadas = selected.arteArteUrls.filter((_, i) => i !== index)
-    onSubstituirArteArte(atualizadas)
-  }
-
   const nomeLogo = visual.nomeEmpresa.replace(/\s+/g, "")
   const headerBg = `linear-gradient(135deg, ${visual.corHeader} 0%, ${visual.corHeader2} 50%, ${visual.corHeader3} 100%)`
-
-  const basePrevisaoImp = selected.previsaoImpressao || selected.previsaoConclusao || ""
-  const basePrevisaoFin = selected.previsaoProducao || selected.previsaoImpressao || selected.previsaoConclusao || ""
-  const basePrevisaoEntrega = selected.previsaoEntrega || selected.previsaoProducao || selected.previsaoImpressao || ""
-  const editandoPrevisao = previsaoEdit && previsaoEdit.id === selected.id ? previsaoEdit : null
-  const currentPrevisaoImp = editandoPrevisao ? editandoPrevisao.imp : basePrevisaoImp
-  const currentPrevisaoFin = editandoPrevisao ? editandoPrevisao.fin : basePrevisaoFin
 
   return (
     <>

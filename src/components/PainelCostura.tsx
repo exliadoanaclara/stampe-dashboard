@@ -1,9 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useMemo } from "react"
 import type { Pedido, Etapa, UserState } from "../domain/tipos"
 import { fmtNumero, fmtData, fmtDataHora } from "../domain/datas"
 import { calcularStatusPrazo } from "../domain/regras"
-import { getProgresso } from "../domain/progresso"
-import { DEFAULT_CONFIG } from "../domain/tipos"
 
 /** Painel de Costura - Interface mobile para a funcionária de costura (FASE 06).
  * Tela simplificada, responsiva para celular.
@@ -38,6 +36,13 @@ export function PainelCostura({
 }: PainelCosturaProps) {
   const ehProducaoOuAdmin = (user.roles ?? []).includes("PRODUCAO") || (user.roles ?? []).includes("ADMIN")
 
+  // Pedidos que estao em COSTURA ou PRODUCAO (aguardando costura) - hook chamado incondicionalmente
+  const pedidosCostura = useMemo(() => {
+    return pedidos.filter(p =>
+      (p.etapa === "COSTURA" || p.etapa === "PRODUCAO") && !p.canceladoEm
+    ).sort((a, b) => a.numero - b.numero)
+  }, [pedidos])
+
   if (!ehProducaoOuAdmin) {
     return (
       <div className="min-h-screen bg-zinc-900 flex items-center justify-center p-4 text-center">
@@ -52,13 +57,6 @@ export function PainelCostura({
       </div>
     )
   }
-
-  // Pedidos que estao em COSTURA ou PRODUCAO (aguardando costura)
-  const pedidosCostura = useMemo(() => {
-    return pedidos.filter(p =>
-      (p.etapa === "COSTURA" || p.etapa === "PRODUCAO") && !p.canceladoEm
-    ).sort((a, b) => a.numero - b.numero)
-  }, [pedidos])
 
   return (
     <div className="min-h-screen bg-red-50 text-zinc-900 p-2 md:p-4 max-w-[500px] mx-auto">

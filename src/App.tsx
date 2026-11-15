@@ -149,7 +149,7 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
   const { logout } = useAuth()
   const { config, setConfig, resetConfig } = useConfig()
   const { visual, setVisual, resetVisual } = useVisual()
-  const { showChat, setShowChat, chatTexto, setChatTexto, chatNaoLidas, chatBoxRef, enviarChat } = useChat(sessao)
+  const { chat, showChat, setShowChat, chatTexto, setChatTexto, chatNaoLidas, chatBoxRef, enviarChat } = useChat(sessao)
   const { toast, setToast } = useToast()
   const [pagina, setPagina] = useState<"PEDIDOS" | "PERSONALIZAR">("PEDIDOS")
   const [showNovoPedido, setShowNovoPedido] = useState(false)
@@ -179,24 +179,21 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
 
   const {
     setSelectedId, selected, editMode, setEditMode,
-    showHistorico, setShowHistorico, previsaoEdit,
-    tempInfoImp, setTempInfoImp, tempInfoFin, setTempInfoFin,
-    tempInfoEntrega, setTempInfoEntrega, tempInfoCostura, setTempInfoCostura,
     carregando, pedidos,
     filtered, stats, atendentes, aba, setAba, busca, setBusca, filtroAtendente, setFiltroAtendente,
-    canEditResumo, canEnviarParaArtes, canEnviarParaImpressao, canEnviarParaProducao, canEnviarParaCostura, canEnviarParaEntrega, canFinalizar,
-    canEditImpressao, canEditArtes, canEditProducao, canEditEntrega, canEditArteUrl, canEditArteArte, canEditArteProducao, prog, motivoBloqueio,
+    canEnviarParaArtes, canEnviarParaImpressao, canEnviarParaProducao, canEnviarParaCostura, canEnviarParaEntrega, canFinalizar,
+    canEditResumo, canEditArteUrl, canEditArteArte,
+    prog, motivoBloqueio,
     criarPedido, salvarEdicao, enviarParaArtes, enviarParaImpressao, enviarParaProducao, enviarParaCostura, enviarParaEntrega, finalizarPedido, gerarTokenAcompanhamento, revogarTokenAcompanhamento,
-    voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida, entregaConcluida, substituirArte, substituirArteProducao,
-    salvarPrevisaoImp, salvarPrevisaoFin, salvarPrevisaoCostura, salvarPrevisaoEntrega,
-    addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
-    editarPrevisao, setPedidos,
+    voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida, entregaConcluida, substituirArte,
+    setPedidos,
+    addInfoCostura,
+    tempInfoCostura, setTempInfoCostura,
   } = usePedidos(currentUser, config, visual)
 
   const [showCadastroUsuarios, setShowCadastroUsuarios] = useState(false)
   const [usuariosSemSenha, setUsuariosSemSenha] = useState<string[]>([])
   const [showAlterarSenha, setShowAlterarSenha] = useState(false)
-  const [tempInfoArtes, setTempInfoArtes] = useState("")
   const [novaSenhaPropria, setNovaSenhaPropria] = useState("")
   const [confirmarSenhaPropria, setConfirmarSenhaPropria] = useState("")
   const [erroSenhaPropria, setErroSenhaPropria] = useState("")
@@ -418,46 +415,6 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
     }
   }, [selected, currentUser.nome])
 
-  const handleSubstituirArteProducao = useCallback((urls: string[]) => {
-    if (selected) substituirArteProducao(selected, urls, currentUser.nome)
-  }, [selected, substituirArteProducao, currentUser.nome])
-
-  const onAddInfoImpressao = useCallback(() => {
-    if (selected) addInfoImpressao(selected)
-  }, [selected, addInfoImpressao])
-
-  const onAddInfoArtes = useCallback(() => {
-    if (selected) addInfoArtes(selected)
-  }, [selected, addInfoArtes])
-
-  const onAddInfoProducao = useCallback(() => {
-    if (selected) addInfoProducao(selected)
-  }, [selected, addInfoProducao])
-
-  const onSalvarPrevisaoImp = useCallback(() => {
-    if (selected) salvarPrevisaoImp(selected)
-  }, [selected, salvarPrevisaoImp])
-
-  const onSalvarPrevisaoFin = useCallback(() => {
-    if (selected) salvarPrevisaoFin(selected)
-  }, [selected, salvarPrevisaoFin])
-
-  const onSalvarPrevisaoEntrega = useCallback(() => {
-    if (selected) salvarPrevisaoEntrega(selected)
-  }, [selected, salvarPrevisaoEntrega])
-
-  const onAddInfoEntrega = useCallback(() => {
-    if (selected) addInfoEntrega(selected)
-  }, [selected, addInfoEntrega])
-
-  const onSalvarPrevisaoCostura = useCallback(() => {
-    if (selected) salvarPrevisaoCostura(selected)
-  }, [selected, salvarPrevisaoCostura])
-
-  const onAddInfoCostura = useCallback(() => {
-    if (selected) addInfoCostura(selected)
-  }, [selected, addInfoCostura])
-
   const cor2 = visual.corHeader2
   const ehAdmin = (currentUser.roles ?? []).includes("ADMIN")
   const canCriarPedido = (currentUser.roles ?? []).includes("PEDIDO") || ehAdmin
@@ -483,7 +440,6 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
             user={currentUser}
             visual={visual}
             onPaginaChange={setPagina}
-            onShowConfig={() => setShowConfig(true)}
             onCadastroUsuarios={ehAdmin ? () => setShowCadastroUsuarios(true) : undefined}
             onShowCentroComando={ehAdmin ? () => setShowCentroComando(true) : undefined}
             onLogout={handleLogout}
@@ -645,37 +601,21 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
               visual={visual}
               config={config}
               canEditResumo={canEditResumo(selected)}
-              editMode={editMode}
-              setEditMode={setEditMode}
-              showHistorico={showHistorico}
-              setShowHistorico={setShowHistorico}
-              tempInfoImp={tempInfoImp}
-              setTempInfoImp={setTempInfoImp}
-              tempInfoArtes={tempInfoArtes}
-              setTempInfoArtes={setTempInfoArtes}
-              tempInfoFin={tempInfoFin}
-              setTempInfoFin={setTempInfoFin}
-              tempInfoEntrega={tempInfoEntrega}
-              setTempInfoEntrega={setTempInfoEntrega}
-              previsaoEdit={previsaoEdit}
-              canEditImpressao={canEditImpressao(selected)}
-              canEditArtes={canEditArtes(selected)}
-              canEditProducao={canEditProducao(selected)}
-              canEditEntrega={canEditEntrega(selected)}
               canEditArteUrl={canEditArteUrl(selected)}
               canEditArteArte={canEditArteArte(selected)}
-              canEditArteProducao={canEditArteProducao(selected)}
+              editMode={editMode}
+              setEditMode={setEditMode}
+              podeVoltarEtapa={selected.etapa !== "PEDIDO" && ((currentUser.roles ?? []).includes("ADMIN") || (currentUser.roles ?? []).includes("PRODUCAO"))}
+              podeReabrir={(currentUser.roles ?? []).includes("ADMIN")}
+              podeCancelar={(currentUser.roles ?? []).includes("ADMIN")}
+              podeEntregaConcluida={podeEntregaConcluida(selected)}
+              motivoBloqueio={(p, d) => motivoBloqueio(p, d)}
               canEnviarParaArtes={canEnviarParaArtes(selected)}
               canEnviarParaImpressao={canEnviarParaImpressao(selected)}
               canEnviarParaProducao={canEnviarParaProducao(selected)}
               canEnviarParaCostura={canEnviarParaCostura(selected)}
               canEnviarParaEntrega={canEnviarParaEntrega(selected)}
               canFinalizar={canFinalizar(selected)}
-              podeVoltarEtapa={selected.etapa !== "PEDIDO" && ((currentUser.roles ?? []).includes("ADMIN") || (currentUser.roles ?? []).includes("PRODUCAO"))}
-              podeReabrir={(currentUser.roles ?? []).includes("ADMIN")}
-              podeCancelar={(currentUser.roles ?? []).includes("ADMIN")}
-              podeEntregaConcluida={podeEntregaConcluida(selected)}
-              motivoBloqueio={(p, d) => motivoBloqueio(p, d)}
               onClose={() => setSelectedId(null)}
               onPrint={() => setShowPrintOS(selected)}
               onSalvarEdicao={handleSalvarEdicao}
@@ -691,19 +631,10 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
               onCancelar={handleCancelar}
               onSubstituirArte={handleSubstituirArte}
               onSubstituirArteArte={handleSubstituirArteArte}
-              onSubstituirArteProducao={handleSubstituirArteProducao}
-              onAddInfoImpressao={onAddInfoImpressao}
-              onAddInfoArtes={onAddInfoArtes}
-              onAddInfoProducao={onAddInfoProducao}
-              onAddInfoEntrega={onAddInfoEntrega}
-              onSalvarPrevisaoImp={onSalvarPrevisaoImp}
-              onSalvarPrevisaoFin={onSalvarPrevisaoFin}
-              onSalvarPrevisaoEntrega={onSalvarPrevisaoEntrega}
               tokenAcompanhamento={selected?.tokenAcompanhamento}
               tokenAcompanhamentoAtivo={selected?.tokenAcompanhamentoAtivo}
               onGerarLink={handleGerarLink}
               onRevogarLink={handleRevogarLink}
-              onEditarPrevisao={editarPrevisao}
             />
           )}
           <NovoPedidoModal
@@ -755,7 +686,7 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
           )}
           {showPrintOS && <PrintOS selected={showPrintOS} visual={visual} cor2={cor2} />}
           <Chat
-            chat={[]}
+            chat={chat}
             showChat={showChat}
             setShowChat={setShowChat}
             chatTexto={chatTexto}

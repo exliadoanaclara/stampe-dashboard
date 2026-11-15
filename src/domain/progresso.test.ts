@@ -12,7 +12,7 @@ describe("getProgresso", () => {
   })
 
   it("respeta a configuração do usuário (PEND-012)", () => {
-    const custom = { PEDIDO: 10, ARTES: 20, IMPRESSAO: 40, PRODUCAO: 80, ENTREGA: 90, FINALIZADO: 100 }
+    const custom = { PEDIDO: 10, ARTES: 20, IMPRESSAO: 40, PRODUCAO: 80, COSTURA: 85, ENTREGA: 90, FINALIZADO: 100 }
     expect(getProgresso("PEDIDO", custom)).toBe(10)
     expect(getProgresso("ARTES", custom)).toBe(20)
     expect(getProgresso("IMPRESSAO", custom)).toBe(40)

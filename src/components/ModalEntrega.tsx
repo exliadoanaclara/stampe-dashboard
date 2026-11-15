@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { Pedido } from "../domain/tipos"
-import { fmtData, fmtDataHora, fmtNumero } from "../domain/datas"
+import { fmtNumero } from "../domain/datas"
 
 /** Modal de entrega detalhado (FASE 07).
  * Permite registrar: responsável, data/horário, situação, pagamento (opcional),
@@ -31,7 +31,6 @@ export function ModalEntrega({ show, pedido, onClose, onConfirmar }: ModalEntreg
   if (!show) return null
 
   const agora = new Date()
-  const dataHoje = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`
   const horaAgora = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`
 
   return (

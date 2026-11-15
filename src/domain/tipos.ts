@@ -86,6 +86,11 @@ export interface Pedido {
     usuarioNome: string
     data: string
   }
+  /** Lock de prioridade de reposicao */
+  prioridadeLock?: {
+    ativo: boolean
+    dataFim?: string
+  }
   /** Link individual de acompanhamento do cliente (FASE 08) */
   tokenAcompanhamento?: string          /** token nao previsivel para o link publico */
   tokenAcompanhamentoAtivo?: boolean    /** se o link esta ativo (pode ser revogado) */

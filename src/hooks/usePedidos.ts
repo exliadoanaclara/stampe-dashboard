@@ -26,7 +26,7 @@ import {
   podeAvancarParaImpressao,
   podeAvancarParaProducao,
   podeAvancarParaCostura,
-  getPedidoPrioritario,
+  podeAcessarPedido,
 } from "../domain/permissoes"
 import { ETAPA_ANTERIOR, maxNumeroDoDia, semArte } from "../domain/regras"
 import * as storage from "../data/storage"
@@ -60,6 +60,8 @@ interface UsePedidosReturn {
   setTempPrevisaoFin: React.Dispatch<React.SetStateAction<string>>
   tempPrevisaoEntrega: string
   setTempPrevisaoEntrega: React.Dispatch<React.SetStateAction<string>>
+  tempPrevisaoCostura: string
+  setTempPrevisaoCostura: React.Dispatch<React.SetStateAction<string>>
   tempInfoImp: string
   setTempInfoImp: React.Dispatch<React.SetStateAction<string>>
   tempInfoArtes: string
@@ -93,7 +95,7 @@ interface UsePedidosReturn {
   canEditArteArte: (p: Pedido) => boolean
   canEditArteProducao: (p: Pedido) => boolean
   prog: (p: Pedido) => number
-  motivoBloqueio: (p: Pedido, destino: Etapa) => string | null
+  motivoBloqueio: (p: Pedido, destino: Etapa) => string | null | undefined,
   statusPrazo: (p: Pedido) => StatusPrazo
   criarPedido: (form: FormState) => Promise<void>
   salvarEdicao: (selected: Pedido, formData: FormData, userNome: string) => void
@@ -106,7 +108,7 @@ interface UsePedidosReturn {
   reabrirPedido: (p: Pedido, user: UserState) => Promise<void>
   cancelarPedido: (p: Pedido, user: UserState) => Promise<void>
   podeEntregaConcluida: (p: Pedido) => boolean
-  entregaConcluida: (p: Pedido, user: UserState) => Promise<void>
+  entregaConcluida: (p: Pedido, user: UserState, dados?: { entreguePor?: string; dataEntrega?: string; entregaSituacao?: string; entregaPagamento?: string; entregaAssinatura?: string; observacoes?: string }) => Promise<void>
   substituirArte: (p: Pedido, urls: string[], userNome: string) => void
   substituirArteProducao: (p: Pedido, urls: string[], userNome: string) => void
   addInfoImpressao: (p: Pedido) => void
@@ -118,6 +120,12 @@ interface UsePedidosReturn {
   salvarPrevisaoCostura: (p: Pedido) => void
   salvarPrevisaoEntrega: (p: Pedido) => void
   editarPrevisao: (imp: string, fin: string) => void
+  tempInfoCostura: string
+  setTempInfoCostura: React.Dispatch<React.SetStateAction<string>>
+  enviarParaCostura: (p: Pedido, user: UserState) => Promise<void>
+  gerarTokenAcompanhamento: (p: Pedido, user: UserState) => Promise<string | null>
+  revogarTokenAcompanhamento: (p: Pedido) => Promise<void>
+  addInfoCostura: (p: Pedido) => void
 }
 
 interface FormState {
@@ -235,8 +243,8 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
       setCarregando(true)
       try {
         const r = await repo.listar()
-        if (r.ok && !cancelado) {
-          setPedidos(r.valor)
+        if (r.ok) {
+          if (!cancelado) setPedidos(r.valor)
         } else if (!cancelado) {
           console.error("Falha ao carregar pedidos:", r.erro)
         }
@@ -309,25 +317,25 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
       .subscribe()
 
     function handleInfosChange(tipo: keyof Pedido, payload: any) {
-      const novo = payload.new as InfoItem
-      const antigo = payload.old as InfoItem
+      const novo = payload.new as InfoItem & { pedido_id?: string }
+      const antigo = payload.old as InfoItem & { pedido_id?: string }
       if (payload.eventType === 'INSERT' && novo) {
         setPedidos(prev => prev.map(p =>
           p.id === novo.pedido_id
-            ? { ...p, [tipo]: [...p[tipo], novo] }
+            ? { ...p, [tipo]: (Array.isArray(p[tipo]) ? [...p[tipo], novo] : [novo as any]) }
             : p
         ))
       } else if (payload.eventType === 'DELETE' && antigo) {
         setPedidos(prev => prev.map(p =>
           p.id === antigo.pedido_id
-            ? { ...p, [tipo]: p[tipo].filter(i => i.id !== antigo.id) }
+            ? { ...p, [tipo]: (Array.isArray(p[tipo]) ? p[tipo] : []).filter((i: any) => i.id !== antigo.id) }
             : p
         ))
       }
     }
 
     function handleHistoricoChange(payload: any) {
-      const novo = payload.new as HistoricoItem
+      const novo = payload.new as HistoricoItem & { pedido_id?: string }
       if (payload.eventType === 'INSERT' && novo) {
         setPedidos(prev => prev.map(p =>
           p.id === novo.pedido_id
@@ -338,7 +346,7 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
     }
 
     function handleEtapaHistoricoChange(payload: any) {
-      const novo = payload.new as EtapaHist
+      const novo = payload.new as EtapaHist & { pedido_id?: string }
       if (payload.eventType === 'INSERT' && novo) {
         setPedidos(prev => prev.map(p =>
           p.id === novo.pedido_id
@@ -348,7 +356,7 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
       }
     }
 
-    return () => { supabase.removeChannel(channel) }
+    return () => { supabase?.removeChannel(channel) }
   }, [])
 
   useEffect(() => { storage.salvarSeq(seq) }, [seq])
@@ -570,7 +578,7 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
   }, [canEnviarParaCostura, motivoBloqueio])
 
   const gerarTokenAcompanhamento = useCallback(async (p: Pedido, user: UserState) => {
-    if (!podeAcessarPedido(p, user.id, user.roles)) return
+    if (!podeAcessarPedido(p, user.id, user.roles)) return null
     const token = `stampe-track-${crypto.randomUUID()}`
     setPedidos(prev => prev.map(x => {
       if (x.id !== p.id) return x
@@ -621,7 +629,7 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
     const de = ETAPA_ANTERIOR[p.etapa]
     if (!de) return
     
-    let motivo = ""
+    let motivo: string | null = ""
     let isReposicao = false
     
     // Se voltando de PRODUCAO para IMPRESSAO, pergunta se é REPOSIÇÃO
@@ -790,7 +798,7 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
   return {
     pedidos, carregando, setPedidos, seq, setSeq, selectedId, setSelectedId, selected, editMode, setEditMode,
     showHistorico, setShowHistorico, previsaoEdit, setPrevisaoEdit,
-    tempPrevisaoImp, setTempPrevisaoImp, tempPrevisaoFin, setTempPrevisaoFin, tempPrevisaoEntrega, setTempPrevisaoEntrega,
+    tempPrevisaoImp, setTempPrevisaoImp, tempPrevisaoFin, setTempPrevisaoFin, tempPrevisaoEntrega, setTempPrevisaoEntrega, tempPrevisaoCostura, setTempPrevisaoCostura,
     tempInfoImp, setTempInfoImp, tempInfoArtes, setTempInfoArtes, tempInfoCostura, setTempInfoCostura, tempInfoFin, setTempInfoFin, tempInfoEntrega, setTempInfoEntrega,
     filtered, stats, atendentes, aba, setAba, busca, setBusca, filtroAtendente, setFiltroAtendente,
     canEditResumo, canEnviarParaArtes, canEnviarParaImpressao, canEnviarParaProducao, canEnviarParaCostura, canEnviarParaEntrega, canFinalizar,
@@ -798,7 +806,6 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
     criarPedido, salvarEdicao, enviarParaArtes, enviarParaImpressao, enviarParaProducao, enviarParaCostura, enviarParaEntrega, finalizarPedido,
     voltarEtapa, reabrirPedido, cancelarPedido, podeEntregaConcluida: podeEntregaConcluidaCb, entregaConcluida, substituirArte, substituirArteProducao, addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
     salvarPrevisaoImp, salvarPrevisaoFin, salvarPrevisaoEntrega, salvarPrevisaoCostura, editarPrevisao,
-    addInfoImpressao, addInfoArtes, addInfoProducao, addInfoCostura, addInfoEntrega,
     gerarTokenAcompanhamento, revogarTokenAcompanhamento,
   }
 }

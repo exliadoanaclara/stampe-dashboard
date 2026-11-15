@@ -1,9 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react"
-import type { Pedido, Etapa, UserState, Role } from "../domain/tipos"
-import { diaLocal, fmtData, fmtDataHora, fmtNumero } from "../domain/datas"
+import type { Pedido, Etapa, UserState } from "../domain/tipos"
+import { diaLocal, fmtDataHora } from "../domain/datas"
 import { calcularStatusPrazo } from "../domain/regras"
-import { getProgresso } from "../domain/progresso"
-import { DEFAULT_CONFIG } from "../domain/tipos"
 
 /** Centro de Comando Gerencial (FASE 09).
  * Tela exclusiva para administradores.
@@ -143,7 +141,6 @@ export function CentroComando({ user, pedidos, onClose }: CentroComandoProps) {
   ).length
   const pedidosUrgentes = pedidosFiltrados.filter(p => p.prioridade === "URGENTE").length
   const pedidosAguardandoArte = pedidosFiltrados.filter(p => p.etapa === "PEDIDO" || p.etapa === "ARTES").length
-  const pedidosAguardandoImpressao = pedidosFiltrados.filter(p => p.etapa === "IMPRESSAO").length
 
   // ===== Grafico: pedidos por etapa =====
   const contagemPorEtapa = useMemo(() => {
@@ -313,7 +310,7 @@ export function CentroComando({ user, pedidos, onClose }: CentroComandoProps) {
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-zinc-500 uppercase">Preset</label>
               <div className="flex gap-1">
-                {["todos", "hoje", "7dias", "30dias", "mes"].map(p => (
+                {(["todos", "hoje", "7dias", "30dias", "mes"] as const).map(p => (
                   <button
                     key={p}
                     onClick={() => { setPreset(p); setFiltroDataInicial(""); setFiltroDataFinal("") }}
