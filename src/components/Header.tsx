@@ -14,6 +14,10 @@ interface HeaderProps {
     corHeader: string
     corHeader2: string
     corHeader3: string
+    bannerUrl: string | null
+    bannerEsq: boolean
+    bannerDir: boolean
+    bannerLarg: number
   }
   onPaginaChange: (pagina: "PEDIDOS" | "PERSONALIZAR") => void
   onCadastroUsuarios?: () => void
@@ -28,36 +32,49 @@ export function Header({ user, visual, onPaginaChange, onCadastroUsuarios, onSho
   const headerBg = `linear-gradient(135deg, ${cor1} 0%, ${cor2} 50%, ${cor3} 100%)`
   const nomeLogo = visual.nomeEmpresa.replace(/\s+/g, "")
 
-  return (
-    <header className="relative overflow-hidden print-hide-layout">
-      <div style={{ background: headerBg }} className="text-white px-4 md:px-6 pt-6 pb-10">
-        <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row md:items-center justify-between">
-          <div className="flex items-center gap-4 min-w-0">
-            {visual.logoUrl && (
-              <img src={visual.logoUrl} alt="logo" className="w-auto object-contain shrink-0" style={{ height: visual.logoImgAlt }} />
-            )}
-            <div className="min-w-0">
-              <h1 className="text-[40px] md:text-[52px] font-black leading-none tracking-tight">{visual.titulo}</h1>
-              <p className="text-white/80 text-sm md:text-[15px] -mt-1 tracking-wide">{visual.subtitulo}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center bg-white/10 backdrop-blur rounded-full px-4 py-2 border-2 border-solid border-white/30">
-              <div className="leading-none">
-                <div className="font-black tracking-widest" style={{ fontSize: visual.logoTam }}>
-                  {visual.logoUrl ? null : <span className="opacity-80">◎</span>} {nomeLogo}
-                </div>
-                {visual.subLogo && (
-                  <div className="tracking-[0.2em] opacity-80 -mt-1" style={{ fontSize: Math.max(8, Math.round(visual.logoTam * 0.62)) }}>{visual.subLogo}</div>
-                )}
-              </div>
-            </div>
-            <div className="md:hidden flex items-center gap-2 font-black tracking-widest" style={{ fontSize: visual.logoTam }}>
-              {visual.logoUrl ? null : <span>◎</span>} {nomeLogo}
-            </div>
-          </div>
+  const headerContent = (
+    <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row md:items-center justify-between">
+      <div className="flex items-center gap-4 min-w-0">
+        {visual.logoUrl && (
+          <img src={visual.logoUrl} alt="logo" className="w-auto object-contain shrink-0" style={{ height: visual.logoImgAlt }} />
+        )}
+        <div className="min-w-0">
+          <h1 className="text-[40px] md:text-[52px] font-black leading-none tracking-tight">{visual.titulo}</h1>
+          <p className="text-white/90 text-sm md:text-[15px] -mt-1 tracking-wide">{visual.subtitulo}</p>
         </div>
       </div>
+      <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center bg-white/20 backdrop-blur rounded-full px-4 py-2 border-2 border-solid border-white/40">
+          <div className="leading-none">
+            <div className="font-black tracking-widest" style={{ fontSize: visual.logoTam }}>
+              {visual.logoUrl ? null : <span className="opacity-80">◎</span>} {nomeLogo}
+            </div>
+            {visual.subLogo && (
+              <div className="tracking-[0.2em] opacity-90 -mt-1" style={{ fontSize: Math.max(8, Math.round(visual.logoTam * 0.62)) }}>{visual.subLogo}</div>
+            )}
+          </div>
+        </div>
+        <div className="md:hidden flex items-center gap-2 font-black tracking-widest" style={{ fontSize: visual.logoTam }}>
+          {visual.logoUrl ? null : <span>◎</span>} {nomeLogo}
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <header className="relative overflow-hidden print-hide-layout">
+      {visual.bannerUrl ? (
+        <div className="relative w-full overflow-hidden">
+          <img src={visual.bannerUrl} alt="banner" className={`w-full h-auto object-cover ${visual.bannerDir ? "object-right" : visual.bannerEsq ? "object-left" : "object-center"}`} style={{ maxHeight: visual.bannerLarg }} />
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-between px-4 md:px-6 pt-6 pb-10">
+            {headerContent}
+          </div>
+        </div>
+      ) : (
+        <div style={{ background: headerBg }} className="text-white px-4 md:px-6 pt-6 pb-10">
+          {headerContent}
+        </div>
+      )}
       <div className="max-w-[1280px] mx-auto px-4 mt-3 flex flex-wrap gap-2 items-center justify-between">
         <div className="flex items-center gap-2 text-sm">
           <span className="hidden md:inline text-zinc-500">Logado como:</span>

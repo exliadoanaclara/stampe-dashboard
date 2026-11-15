@@ -91,6 +91,34 @@ export function Personalizar({
           </section>
 
           <section>
+            <h3 className="font-black text-zinc-900 text-lg mb-4 flex items-center gap-2">🖼️ BANNER DO CABECALHO (substitui a barra vermelha)</h3>
+            <label className="space-y-1">
+              <span className="text-[11px] font-black text-zinc-600">IMAGEM BANNER (base64)</span>
+              <input type="file" accept="image/*" onChange={e => handleFile(e, "bannerUrl")} className="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl outline-none font-bold text-sm" />
+              {visual.bannerUrl && (
+                <div className="mt-2 flex items-center gap-2">
+                  <img src={visual.bannerUrl} alt="preview banner" className="w-32 h-12 object-cover rounded-lg border" />
+                  <button onClick={() => onVisualChange({ ...visual, bannerUrl: null })} className="text-xs bg-red-50 text-red-700 border border-red-200 rounded-full px-3 py-1.5">Remover banner</button>
+                </div>
+              )}
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+              <label className="flex items-center gap-2 cursor-pointer space-y-0">
+                <input type="checkbox" defaultChecked={visual.bannerEsq} onChange={e => onVisualChange({ ...visual, bannerEsq: e.target.checked })} className="w-5 h-5 accent-red-600" />
+                <span className="text-sm font-medium text-zinc-700">Banner alinhado à esquerda</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer space-y-0">
+                <input type="checkbox" defaultChecked={visual.bannerDir} onChange={e => onVisualChange({ ...visual, bannerDir: e.target.checked })} className="w-5 h-5 accent-red-600" />
+                <span className="text-sm font-medium text-zinc-700">Banner alinhado à direita</span>
+              </label>
+              <label className="space-y-1">
+                <span className="text-[11px] font-black text-zinc-600">ALTURA MAXIMA (px)</span>
+                <input type="number" min="50" max="500" defaultValue={visual.bannerLarg} onChange={e => onVisualChange({ ...visual, bannerLarg: Number(e.target.value) })} className="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl outline-none font-bold text-sm" />
+              </label>
+            </div>
+          </section>
+
+          <section>
             <h3 className="font-black text-zinc-900 text-lg mb-4 flex items-center gap-2">🖼️ LOGO (opcional - base64)</h3>
             <label className="space-y-1">
               <span className="text-[11px] font-black text-zinc-600">IMAGEM LOGO</span>
