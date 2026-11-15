@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import type { Pedido, VisualConfig, Etapa, ProgressConfig } from "../domain/tipos"
+import type { Pedido, VisualConfig, Etapa, ProgressConfig, Aba } from "../domain/tipos"
 import { ARTE_ACEITOS } from "../domain/tipos"
 import { fmtNumero, fmtData, fmtDataHora } from "../domain/datas"
 
@@ -111,6 +111,7 @@ interface PedidoModalProps {
   onCancelar: () => void
   onSubstituirArte: (urls: string[]) => void
   onSubstituirArteArte: (urls: string[]) => void
+  abaAtual: Aba
 }
 
 export function PedidoModal({
@@ -123,7 +124,8 @@ export function PedidoModal({
   onGerarLink, onRevogarLink,
   onClose, onPrint, onSalvarEdicao, onEnviarParaArtes, onEnviarParaImpressao,
   onEnviarParaProducao, onEnviarParaCostura, onEnviarParaEntrega, onEntregaConcluida, onFinalizar, onReabrir, onVoltarEtapa, onCancelar,
-  onSubstituirArte, onSubstituirArteArte
+  onSubstituirArte, onSubstituirArteArte,
+  abaAtual,
 }: PedidoModalProps) {
   const [tempArteUrls, setTempArteUrls] = useState<string[]>([])
   const [tempArteArteUrls, setTempArteArteUrls] = useState<string[]>([])
@@ -746,36 +748,28 @@ export function PedidoModal({
                     )}
                   </div>
                 )}
-                {tokenAcompanhamento && tokenAcompanhamentoAtivo ? (
+                {abaAtual === "PEDIDO" && tokenAcompanhamento && tokenAcompanhamentoAtivo ? (
                   <div className="flex flex-col md:flex-row gap-3 pt-1 no-print">
-                    <div className="flex-1 min-w-0">
-                      <input
-                        readonly
-                        value={`${window.location.origin}/acompanhamento?token=${tokenAcompanhamento}`}
-                        className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl outline-none font-bold text-sm truncate"
-                        title="Link de acompanhamento do cliente"
-                      />
-                    </div>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(`${window.location.origin}/acompanhamento?token=${tokenAcompanhamento}`)
                         setLinkCopiado(true)
                         setTimeout(() => setLinkCopiado(false), 2000)
                       }}
-                      className="rounded-full py-2 px-3 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-xs md:text-sm"
-                      style={{ background: linkCopiado ? "#10b981" : "#7c3aed", color: "#fff" }}
+                      className="flex-1 rounded-full py-3.5 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-center px-4 leading-tight"
+                      style={{ background: linkCopiado ? "#10b981" : "#7c3aed", color: "#fff", fontSize: "14px" }}
                     >
                       {linkCopiado ? "✅ Copiado" : "📋 Copiar link"}
                     </button>
                     <button
                       onClick={onRevogarLink}
-                      className="flex-1 md:w-auto rounded-full py-2 px-4 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-xs md:text-sm"
-                      style={{ background: "#dc2626", color: "#fff" }}
+                      className="flex-1 md:w-auto rounded-full py-3.5 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-center px-4 leading-tight"
+                      style={{ background: "#dc2626", color: "#fff", fontSize: "14px" }}
                     >
                       ?? Revogar link do cliente
                     </button>
                   </div>
-                ) : (
+                ) : abaAtual === "PEDIDO" ? (
                   <div className="flex flex-col md:flex-row gap-3 pt-1 no-print">
                     <button
                       onClick={onGerarLink}
@@ -785,7 +779,7 @@ export function PedidoModal({
                       ?? Gerar link de acompanhamento (cliente)
                     </button>
                   </div>
-                )}
+                ) : null}
                 <button onClick={onClose} className="no-print md:w-auto w-full bg-white border border-zinc-200 rounded-full px-6 py-3.5 font-bold text-sm mt-2">Fechar</button>
               </div>
             </div>

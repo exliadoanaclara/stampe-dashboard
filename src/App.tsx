@@ -25,7 +25,7 @@ import {
   PainelCostura,
   ModalEntrega,
 } from "./components"
-import type { Pedido, UserState, Role } from "./domain/tipos"
+import type { Pedido, UserState, Role, Aba } from "./domain/tipos"
 import { USUARIOS_CADASTRADOS } from "./domain/tipos"
 import { fmtNumero } from "./domain/datas"
 import * as storage from "./data/storage"
@@ -633,6 +633,7 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
               onSubstituirArteArte={handleSubstituirArteArte}
               tokenAcompanhamento={selected?.tokenAcompanhamento}
               tokenAcompanhamentoAtivo={selected?.tokenAcompanhamentoAtivo}
+              abaAtual={aba}
               onGerarLink={handleGerarLink}
               onRevogarLink={handleRevogarLink}
             />
@@ -712,11 +713,17 @@ function AppContent({ sessao, onLogout }: { sessao: UserState; onLogout: () => v
 export default function App() {
   const [sessao, setSessao] = useState<UserState | null>(null)
   const [loading, setLoading] = useState(true)
+  const [publicToken, setPublicToken] = useState<string | null>(null)
 
   const { login, criarSenhaPrimeiroAcesso } = useAuth()
 
-  const handleLogout = useCallback(() => {
-    setSessao(null)
+  // Detecta se a URL tem ?token=... (cliente acessando link publico de acompanhamento)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const token = params.get("token")
+    if (token) {
+      setPublicToken(token)
+    }
   }, [])
 
   useEffect(() => {
@@ -756,6 +763,17 @@ export default function App() {
       }
     }
   }, [login, criarSenhaPrimeiroAcesso, sessao])
+
+  // Se o cliente acessou um link publico de acompanhamento, mostra apenas a pagina publica
+  // sem login, sem admin, sem todo o sistema interno.
+  if (publicToken) {
+    const pedidos = storage.carregarPedidos()
+    return (
+      <div style={{ position: 'relative', zIndex: 2, minHeight: '100vh', background: '#ffffff' }}>
+        <PedidoPublico token={publicToken} pedidos={pedidos} />
+      </div>
+    )
+  }
 
   if (loading || !sessao) {
     return <Login onLogin={(ok, usuario) => { if (ok && usuario) setSessao({ id: usuario.id, nome: usuario.nome, roles: usuario.roles as Role[] }) }} />
