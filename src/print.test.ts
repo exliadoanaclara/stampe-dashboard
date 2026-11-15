@@ -5,7 +5,7 @@ import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import * as puppeteer from 'puppeteer';
 import { promises as fs } from 'fs';
 
-describe.skip('Impressão via PDF (PUPPETEER) — requer servidor local (localhost:3030)', () => {
+describe('Impressão via PDF (PUPPETEER)', () => {
   let browser: puppeteer.Browser;
   let page: puppeteer.Page;
   beforeAll(async () => {
