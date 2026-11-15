@@ -500,6 +500,22 @@ export function usePedidos(user: UserState, config: ProgressConfig, visual: Visu
     setSelectedId(novo.id)
     setPrevisaoEdit(null)
     setEditMode(false)
+
+    // Gera automaticamente o link de acompanhamento do cliente ao criar o pedido
+    const token = `stampe-track-${crypto.randomUUID()}`
+    setPedidos(prev => prev.map(x => {
+      if (x.id === novo.id) {
+        return {
+          ...x,
+          tokenAcompanhamento: token,
+          tokenAcompanhamentoAtivo: true,
+          tokenAcompanhamentoCriadoEm: new Date().toISOString(),
+          tokenAcompanhamentoCriadoPor: user.nome,
+          dataAtualizacao: new Date().toISOString(),
+        }
+      }
+      return x
+    }))
   }, [seq, user.id])
 
   const salvarEdicao = useCallback((selected: Pedido, formData: FormData, userNome: string) => {

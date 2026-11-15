@@ -128,6 +128,7 @@ export function PedidoModal({
   const [tempArteUrls, setTempArteUrls] = useState<string[]>([])
   const [tempArteArteUrls, setTempArteArteUrls] = useState<string[]>([])
   const [fullscreenUrl, setFullscreenUrl] = useState<string | null>(null)
+  const [linkCopiado, setLinkCopiado] = useState(false)
   const artePrepRef = useRef<HTMLInputElement>(null)
   const arteOrigRef = useRef<HTMLInputElement>(null)
   const artePrepEmptyRef = useRef<HTMLInputElement>(null)
@@ -745,18 +746,36 @@ export function PedidoModal({
                     )}
                   </div>
                 )}
-                {tokenAcompanhamento && tokenAcompanhamentoAtivo && onRevogarLink && (
+                {tokenAcompanhamento && tokenAcompanhamentoAtivo ? (
                   <div className="flex flex-col md:flex-row gap-3 pt-1 no-print">
+                    <div className="flex-1 min-w-0">
+                      <input
+                        readonly
+                        value={`${window.location.origin}/acompanhamento?token=${tokenAcompanhamento}`}
+                        className="w-full px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-xl outline-none font-bold text-sm truncate"
+                        title="Link de acompanhamento do cliente"
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/acompanhamento?token=${tokenAcompanhamento}`)
+                        setLinkCopiado(true)
+                        setTimeout(() => setLinkCopiado(false), 2000)
+                      }}
+                      className="rounded-full py-2 px-3 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-xs md:text-sm"
+                      style={{ background: linkCopiado ? "#10b981" : "#7c3aed", color: "#fff" }}
+                    >
+                      {linkCopiado ? "✅ Copiado" : "📋 Copiar link"}
+                    </button>
                     <button
                       onClick={onRevogarLink}
-                      className="flex-1 rounded-full py-3.5 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-center px-4 leading-tight"
-                      style={{ background: "#dc2626", color: "#fff", fontSize: "14px" }}
+                      className="flex-1 md:w-auto rounded-full py-2 px-4 font-black tracking-wide shadow-md flex items-center justify-center gap-2 text-xs md:text-sm"
+                      style={{ background: "#dc2626", color: "#fff" }}
                     >
                       ?? Revogar link do cliente
                     </button>
                   </div>
-                )}
-                {!tokenAcompanhamento || !tokenAcompanhamentoAtivo ? (
+                ) : (
                   <div className="flex flex-col md:flex-row gap-3 pt-1 no-print">
                     <button
                       onClick={onGerarLink}
@@ -766,7 +785,7 @@ export function PedidoModal({
                       ?? Gerar link de acompanhamento (cliente)
                     </button>
                   </div>
-                ) : null}
+                )}
                 <button onClick={onClose} className="no-print md:w-auto w-full bg-white border border-zinc-200 rounded-full px-6 py-3.5 font-bold text-sm mt-2">Fechar</button>
               </div>
             </div>
