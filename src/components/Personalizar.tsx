@@ -91,7 +91,7 @@ export function Personalizar({
           </section>
 
           <section>
-            <h3 className="font-black text-zinc-900 text-lg mb-4 flex items-center gap-2">🖼️ BANNER DO CABECALHO (substitui a barra vermelha)</h3>
+            <h3 className="font-black text-zinc-900 text-lg mb-4 flex items-center gap-2">🖼️ BANNER DO CABECALHO</h3>
             <label className="space-y-1">
               <span className="text-[11px] font-black text-zinc-600">IMAGEM BANNER (base64)</span>
               <input type="file" accept="image/*" onChange={e => handleFile(e, "bannerUrl")} className="w-full px-3 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl outline-none font-bold text-sm" />
